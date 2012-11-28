@@ -3,10 +3,10 @@ AM_CXXFLAGS = -Wall -Weffc++ -Wextra
 
 lib_LTLIBRARIES = libmarisa2.la
 
-noinst_LTLIBRARIES = \
-	libmarisa2_grimoire.la
+noinst_LTLIBRARIES = libmarisa2_grimoire.la
 
 libmarisa2_la_SOURCES =
+libmarisa2_la_LIBADD = libmarisa2_grimoire.la
 
 libmarisa2_includedir = ${includedir}/marisa2
 libmarisa2_include_HEADERS = \
