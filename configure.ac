@@ -2,20 +2,18 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([marisa2],
-        [0.0.1],
-        [syata@acm.org])
+AC_INIT([marisa2], [0.0.1], [syata@acm.org])
 AC_CONFIG_SRCDIR([lib/marisa2.h])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
+LT_INIT
 AC_PROG_CXX
-AC_PROG_CC
-AC_PROG_RANLIB
-AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 
 AC_CONFIG_MACRO_DIR([m4])
+
+CXXFLAGS="${CXXFLAGS} -Wall -Wextra -std=c++0x"
 
 # Checks for libraries.
 
@@ -44,3 +42,12 @@ AC_CONFIG_FILES([Makefile
                  tests/Makefile
                  tools/Makefile])
 AC_OUTPUT
+
+echo
+echo "${PACKAGE_NAME} ${PACKAGE_VERSION} configuration:"
+echo "-----------------------"
+echo "  CXX:       ${CXX}"
+echo "  CXXFLAGS:  ${CXXFLAGS}"
+echo "  LIBS:      ${LIBS}"
+echo "  PREFIX:    ${prefix}"
+echo
