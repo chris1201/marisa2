@@ -67,6 +67,8 @@ class Error {
 
 }  // namespace marisa2
 
+#define MARISA2_SUCCESS ::marisa2::Error()
+
 // These macros are used to convert __LINE__ to a string constant.
 #define MARISA2_LINE_INTEGER_TO_STRING(line) #line
 #define MARISA2_LINE_TO_STRING(line) MARISA2_LINE_INTEGER_TO_STRING(line)
