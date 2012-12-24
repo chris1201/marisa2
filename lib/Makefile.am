@@ -2,13 +2,14 @@ lib_LTLIBRARIES = libmarisa2.la
 
 noinst_LTLIBRARIES = libmarisa2_grimoire.la
 
-include_HEADERS = marisa2.h
-
-libmarisa2_la_SOURCES =
 libmarisa2_la_LIBADD = libmarisa2_grimoire.la
+
+libmarisa2_la_SOURCES = \
+	marisa2/error.cc
 
 libmarisa2_includedir = ${includedir}/marisa2
 libmarisa2_include_HEADERS = \
+	marisa2/error.h \
 	marisa2/version.h
 
 libmarisa2_grimoire_la_SOURCES = \
@@ -17,6 +18,8 @@ libmarisa2_grimoire_la_SOURCES = \
 libmarisa2_grimoire_includedir = ${includedir}/marisa2/grimoire
 libmarisa2_grimoire_include_HEADERS = \
 	marisa2/grimoire/time.h
+
+include_HEADERS = marisa2.h
 
 .PHONY: FORCE
 
