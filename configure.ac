@@ -35,7 +35,7 @@ AC_ARG_ENABLE([popcnt],
               [enable_popcnt="no"])
 if test "x${enable_popcnt}" != "xno"
 then
-  CPPFLAGS="$CPPFLAGS -DMARISA_USE_POPCNT -msse4.2"
+  CPPFLAGS="$CPPFLAGS -DMARISA2_USE_POPCNT -msse4.2"
   enable_popcnt="yes"
 fi
 AC_MSG_RESULT([${enable_popcnt}])
