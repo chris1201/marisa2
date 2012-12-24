@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([marisa2], [0.0.1], [syata@acm.org])
+AC_INIT([marisa2], [pre-alpha], [syata@acm.org])
 AC_CONFIG_SRCDIR([lib/marisa2.h])
 AM_INIT_AUTOMAKE
 
