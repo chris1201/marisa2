@@ -28,10 +28,6 @@ class ReaderImpl {
   ReaderImpl(const ReaderImpl &) = delete;
   ReaderImpl &operator=(const ReaderImpl &) = delete;
 
-  explicit operator bool() const noexcept {
-    return (file_ != nullptr) || (fd_ != -1) || (stream_ != nullptr);
-  }
-
   Error open(const char *filename) noexcept;
   Error open(std::FILE *file) noexcept;
   Error open(int fd) noexcept;

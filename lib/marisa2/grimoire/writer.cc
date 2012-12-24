@@ -28,10 +28,6 @@ class WriterImpl {
   WriterImpl(const WriterImpl &) = delete;
   WriterImpl &operator=(const WriterImpl &) = delete;
 
-  explicit operator bool() const noexcept {
-    return (file_ != nullptr) || (fd_ != -1) || (stream_ != nullptr);
-  }
-
   Error open(const char *filename) noexcept;
   Error open(std::FILE *file) noexcept;
   Error open(int fd) noexcept;
