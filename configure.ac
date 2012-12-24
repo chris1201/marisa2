@@ -7,7 +7,7 @@ AC_CONFIG_SRCDIR([lib/marisa2.h])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
-LT_INIT
+LT_INIT([win32-dll])
 AC_PROG_CXX
 AC_PROG_INSTALL
 
