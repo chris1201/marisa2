@@ -7,7 +7,8 @@ libmarisa2_la_LIBADD = libmarisa2_grimoire.la
 
 libmarisa2_includedir = ${includedir}/marisa2
 libmarisa2_include_HEADERS = \
-	marisa2.h
+	marisa2.h \
+	version.h
 
 libmarisa2_grimoire_la_SOURCES = \
 	marisa2/grimoire/time.cc
@@ -15,5 +16,16 @@ libmarisa2_grimoire_la_SOURCES = \
 libmarisa2_grimoire_includedir = ${includedir}/marisa2/grimoire
 libmarisa2_grimoire_include_HEADERS = \
 	marisa2/grimoire/time.h
+
+EXTRA_DIST = version.sh
+
+.PHONY: FORCE
+
+FORCE:
+
+grnxx.cpp: version.h
+
+version.h: FORCE
+	TOP_SRCDIR="$(top_srcdir)" "$(srcdir)/version.sh"
 
 noinst_HEADERS =
