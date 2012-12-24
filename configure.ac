@@ -13,7 +13,7 @@ AC_PROG_INSTALL
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_CXXFLAGS="-Wall -Wextra -std=c++0x"
+AM_CXXFLAGS="-Wall -Wextra -std=c++0x -fno-exceptions"
 AM_LDFLAGS="-no-undefined"
 
 AC_SUBST([AM_CXXFLAGS])
