@@ -10,11 +10,8 @@
 
 namespace marisa2 {
 namespace grimoire {
-namespace {
 
 class ReaderImpl;
-
-}  // namespace
 
 class Reader {
  public:

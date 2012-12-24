@@ -4,7 +4,6 @@
 # include <unistd.h>
 #endif  // _WIN32
 
-#include <algorithm>
 #include <ostream>
 #include <limits>
 #include <new>
@@ -13,7 +12,6 @@
 
 namespace marisa2 {
 namespace grimoire {
-namespace {
 
 class WriterImpl {
  public:
@@ -79,18 +77,18 @@ Error WriterImpl::write(const void *bytes, std::size_t num_bytes) {
   if (fd_ != -1) {
     while (num_bytes != 0) {
 #ifdef _WIN32
-      // TODO: constexpr is better.
-      const unsigned int count = std::min(num_bytes,
-          static_cast<std::size_t>(std::numeric_limits<int>::max()));
+      const unsigned int max_count = std::numeric_limits<int>::max();
+      const unsigned int count = (num_bytes < max_count) ?
+          static_cast<unsigned int>(num_bytes) : max_count;
       const int num_bytes_written = ::_write(fd_, bytes, count);
       if (num_bytes_written <= 0) {
         return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes: "
                              "::_write() failed");
       }
 #else  // _WIN32
-      // TODO: constexpr is better.
-      const ::size_t count = std::min(num_bytes,
-          static_cast<std::size_t>(std::numeric_limits< ::ssize_t>::max()));
+      const std::size_t max_count = std::numeric_limits< ::ssize_t>::max();
+      const std::size_t count = (num_bytes < max_count) ?
+          num_bytes : max_count;
       const ::ssize_t num_bytes_written = ::write(fd_, bytes, count);
       if (num_bytes_written <= 0) {
         return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes: "
@@ -133,8 +131,6 @@ Error WriterImpl::flush() noexcept {
   }
   return MARISA2_SUCCESS;
 }
-
-}  // namespace
 
 Writer::Writer() : impl_(nullptr) {}
 Writer::~Writer() {}
