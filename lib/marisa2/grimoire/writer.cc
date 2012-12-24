@@ -1,0 +1,245 @@
+#ifdef _WIN32
+# include <io.h>
+#else  // _WIN32
+# include <unistd.h>
+#endif  // _WIN32
+
+#include <algorithm>
+#include <iostream>
+#include <limits>
+#include <new>
+
+#include "writer.h"
+
+namespace marisa2 {
+namespace grimoire {
+namespace {
+
+class WriterImpl {
+ public:
+  WriterImpl() noexcept
+    : file_(nullptr), fd_(-1), stream_(nullptr), needs_fclose_(false) {}
+  ~WriterImpl() noexcept {
+    if (needs_fclose_) {
+      if (file_ != nullptr) {
+        std::fclose(file_);
+      }
+    }
+  }
+
+  WriterImpl(const WriterImpl &) = delete;
+  WriterImpl &operator=(const WriterImpl &) = delete;
+
+  explicit operator bool() const noexcept {
+    return (file_ != nullptr) || (fd_ != -1) || (stream_ != nullptr);
+  }
+
+  Error open(const char *filename) noexcept;
+  Error open(std::FILE *file) noexcept;
+  Error open(int fd) noexcept;
+  Error open(std::ostream &stream) noexcept;
+
+  Error write(const void *bytes, std::size_t num_bytes) noexcept;
+
+  Error flush() noexcept;
+
+ private:
+  std::FILE *file_;
+  int fd_;
+  std::ostream *stream_;
+  bool needs_fclose_;
+};
+
+Error WriterImpl::open(const char *filename) {
+  file_ = std::fopen(filename, "wb");
+  if (file_ == nullptr) {
+    return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to open file");
+  }
+  needs_fclose_ = true;
+  return MARISA2_SUCCESS;
+}
+
+Error WriterImpl::open(std::FILE *file) {
+  file_ = file;
+  return MARISA2_SUCCESS;
+}
+
+Error WriterImpl::open(int fd) {
+  fd_ = fd;
+  return MARISA2_SUCCESS;
+}
+
+Error WriterImpl::open(std::ostream &stream) {
+  stream_ = &stream;
+  return MARISA2_SUCCESS;
+}
+
+Error WriterImpl::write(const void *bytes, std::size_t num_bytes) {
+  if (fd_ != -1) {
+    while (num_bytes != 0) {
+#ifdef _WIN32
+      // TODO: constexpr is better.
+      const unsigned int count = std::min(num_bytes,
+          static_cast<std::size_t>(std::numeric_limits<int>::max()));
+      const int num_bytes_written = ::_write(fd_, bytes, count);
+#else  // _WIN32
+      // TODO: constexpr is better.
+      const ::size_t count = std::min(num_bytes,
+          static_cast<std::size_t>(std::numeric_limits< ::ssize_t>::max()));
+      const ::ssize_t num_bytes_written = ::write(fd_, bytes, count);
+#endif  // _WIN32
+      if (num_bytes_written <= 0) {
+        return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes");
+      }
+      bytes = static_cast<const char *>(bytes) + num_bytes_written;
+      num_bytes -= num_bytes_written;
+    }
+  } else if (file_ != nullptr) {
+    if (std::fwrite(bytes, 1, num_bytes, file_) != num_bytes) {
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes");
+    }
+  } else if (stream_ != nullptr) {
+    if (!stream_->write(static_cast<const char *>(bytes), num_bytes)) {
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes");
+    }
+  }
+  return MARISA2_SUCCESS;
+}
+
+Error WriterImpl::flush() noexcept {
+  if (fd_ != -1) {
+    if (::fsync(fd_) != 0) {
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer");
+    }
+  } else if (file_ != nullptr) {
+    if (std::fflush(file_) != 0) {
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer");
+    }
+  } else if (stream_ != nullptr) {
+    if (!stream_->flush()) {
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer");
+    }
+  }
+  return MARISA2_SUCCESS;
+}
+
+}  // namespace
+
+Writer::Writer() : impl_(nullptr) {}
+Writer::~Writer() {}
+
+Writer::Writer(Writer &&rhs) : impl_(std::move(rhs.impl_)) {}
+Writer &Writer::operator=(Writer &&rhs) {
+  impl_ = std::move(rhs.impl_);
+  return *this;
+}
+
+
+Error Writer::open(const char *filename) {
+  if (filename == nullptr) {
+    return MARISA2_ERROR(MARISA2_NULL_ERROR,
+                         "failed to open file: filename == nullptr");
+  }
+
+  std::unique_ptr<WriterImpl> impl(new (std::nothrow) WriterImpl);
+  if (!impl) {
+    return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
+                         "failed to open file: memory allocation failed");
+  }
+
+  Error error = impl->open(filename);
+  if (!error) {
+    impl_ = std::move(impl);
+  }
+  return error;
+}
+
+Error Writer::open(std::FILE *file) {
+  if (file == nullptr) {
+    return MARISA2_ERROR(MARISA2_NULL_ERROR,
+                         "failed to open file: file == nullptr");
+  }
+
+  std::unique_ptr<WriterImpl> impl(new (std::nothrow) WriterImpl);
+  if (!impl) {
+    return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
+                         "failed to open file: memory allocation failed");
+  }
+
+  Error error = impl->open(file);
+  if (!error) {
+    impl_ = std::move(impl);
+  }
+  return error;
+}
+
+Error Writer::open(int fd) {
+  if (fd == -1) {
+    return MARISA2_ERROR(MARISA2_CODE_ERROR,
+                         "failed to open file: fd == -1");
+  }
+
+  std::unique_ptr<WriterImpl> impl(new (std::nothrow) WriterImpl);
+  if (!impl) {
+    return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
+                         "failed to open file: memory allocation failed");
+  }
+
+  Error error = impl->open(fd);
+  if (!error) {
+    impl_ = std::move(impl);
+  }
+  return error;
+}
+
+Error Writer::open(std::ostream &stream) {
+  if (!stream) {
+    return MARISA2_ERROR(MARISA2_STATE_ERROR,
+                         "failed to open file: invalid stream");
+  }
+
+  std::unique_ptr<WriterImpl> impl(new (std::nothrow) WriterImpl);
+  if (!impl) {
+    return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
+                         "failed to open file: memory allocation failed");
+  }
+
+  Error error = impl->open(stream);
+  if (!error) {
+    impl_ = std::move(impl);
+  }
+  return error;
+}
+
+Error Writer::write_objs(const void *objs, std::size_t obj_size,
+                         std::uint32_t num_objs) {
+  if (!impl_) {
+    return MARISA2_ERROR(MARISA2_STATE_ERROR,
+                         "failed to write objects: not ready");
+  }
+
+  if (obj_size == 0) {
+    return MARISA2_ERROR(MARISA2_RANGE_ERROR,
+                         "failed to write objects: invalid object size");
+  }
+
+  if (num_objs == 0) {
+    return MARISA2_SUCCESS;
+  } else if (num_objs > (std::numeric_limits<std::size_t>::max() / obj_size)) {
+    return MARISA2_ERROR(MARISA2_RANGE_ERROR,
+                         "failed to write objects: too many objects");
+  }
+
+  return impl_->write(objs, obj_size * num_objs);
+}
+
+Error Writer::flush() noexcept {
+  if (!impl_) {
+    return MARISA2_ERROR(MARISA2_STATE_ERROR, "failed to flush buffer");
+  }
+
+  return impl_->flush();
+}
+
+}  // namespace grimoire
+}  // namespace marisa2
