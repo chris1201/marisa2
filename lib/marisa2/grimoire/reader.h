@@ -1,7 +1,6 @@
 #ifndef MARISA2_GRIMOIRE_READER_H
 #define MARISA2_GRIMOIRE_READER_H
 
-#include <cstdint>
 #include <cstdio>
 #include <iosfwd>
 #include <memory>
@@ -39,7 +38,7 @@ class Reader {
   std::unique_ptr<ReaderImpl> impl_;
 
   Error read_objs(void *objs, std::size_t obj_size,
-                  std::uint32_t num_objs) noexcept;
+                  std::size_t num_objs) noexcept;
 };
 
 }  // namespace grimoire

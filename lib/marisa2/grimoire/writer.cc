@@ -226,7 +226,7 @@ Error Writer::open(std::ostream &stream) {
 }
 
 Error Writer::write_objs(const void *objs, std::size_t obj_size,
-                         std::uint32_t num_objs) {
+                         std::size_t num_objs) {
   if (!impl_) {
     return MARISA2_ERROR(MARISA2_STATE_ERROR,
                          "failed to write objects: not ready");

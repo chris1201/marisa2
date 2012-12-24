@@ -1,7 +1,6 @@
 #ifndef MARISA2_GRIMOIRE_WRITER_H
 #define MARISA2_GRIMOIRE_WRITER_H
 
-#include <cstdint>
 #include <cstdio>
 #include <iosfwd>
 #include <memory>
@@ -41,7 +40,7 @@ class Writer {
   std::unique_ptr<WriterImpl> impl_;
 
   Error write_objs(const void *objs, std::size_t obj_size,
-                   std::uint32_t num_objs) noexcept;
+                   std::size_t num_objs) noexcept;
 };
 
 }  // namespace grimoire

@@ -196,7 +196,7 @@ Error Reader::open(std::istream &stream) {
 }
 
 Error Reader::read_objs(void *objs, std::size_t obj_size,
-                        std::uint32_t num_objs) {
+                        std::size_t num_objs) {
   if (!impl_) {
     return MARISA2_ERROR(MARISA2_STATE_ERROR,
                          "failed to read objects: not ready");
