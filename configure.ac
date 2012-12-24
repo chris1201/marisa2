@@ -43,8 +43,8 @@ AC_MSG_RESULT([${enable_popcnt}])
 AC_CONFIG_FILES([Makefile
                  marisa2.pc
                  lib/Makefile
-                 tests/Makefile
-                 tools/Makefile])
+                 src/Makefile
+                 test/Makefile])
 AC_OUTPUT
 
 echo

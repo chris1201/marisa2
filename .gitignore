@@ -18,7 +18,7 @@
 /ltmain.sh
 /marisa2.pc
 /missing
-/tests/test
-/tools/tool
+/src/tool
+/test/test
 Makefile
 Makefile.in
