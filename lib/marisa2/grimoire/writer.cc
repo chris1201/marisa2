@@ -5,7 +5,7 @@
 #endif  // _WIN32
 
 #include <algorithm>
-#include <iostream>
+#include <ostream>
 #include <limits>
 #include <new>
 
