@@ -53,7 +53,8 @@ class WriterImpl {
 Error WriterImpl::open(const char *filename) {
   file_ = std::fopen(filename, "wb");
   if (file_ == nullptr) {
-    return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to open file");
+    return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to open file: "
+                         "std::fopen() failed");
   }
   needs_fclose_ = true;
   return MARISA2_SUCCESS;
@@ -82,25 +83,32 @@ Error WriterImpl::write(const void *bytes, std::size_t num_bytes) {
       const unsigned int count = std::min(num_bytes,
           static_cast<std::size_t>(std::numeric_limits<int>::max()));
       const int num_bytes_written = ::_write(fd_, bytes, count);
+      if (num_bytes_written <= 0) {
+        return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes: "
+                             "::_write() failed");
+      }
 #else  // _WIN32
       // TODO: constexpr is better.
       const ::size_t count = std::min(num_bytes,
           static_cast<std::size_t>(std::numeric_limits< ::ssize_t>::max()));
       const ::ssize_t num_bytes_written = ::write(fd_, bytes, count);
-#endif  // _WIN32
       if (num_bytes_written <= 0) {
-        return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes");
+        return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes: "
+                             "::write() failed");
       }
+#endif  // _WIN32
       bytes = static_cast<const char *>(bytes) + num_bytes_written;
       num_bytes -= num_bytes_written;
     }
   } else if (file_ != nullptr) {
     if (std::fwrite(bytes, 1, num_bytes, file_) != num_bytes) {
-      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes");
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes: "
+                           "std::fwrite() failed");
     }
   } else if (stream_ != nullptr) {
     if (!stream_->write(static_cast<const char *>(bytes), num_bytes)) {
-      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes");
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to write bytes: "
+                           "std::ostream::write() failed");
     }
   }
   return MARISA2_SUCCESS;
@@ -109,15 +117,18 @@ Error WriterImpl::write(const void *bytes, std::size_t num_bytes) {
 Error WriterImpl::flush() noexcept {
   if (fd_ != -1) {
     if (::fsync(fd_) != 0) {
-      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer");
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer: "
+                           "::fsync() failed");
     }
   } else if (file_ != nullptr) {
     if (std::fflush(file_) != 0) {
-      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer");
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer: "
+                           "std::fflush() failed");
     }
   } else if (stream_ != nullptr) {
     if (!stream_->flush()) {
-      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer");
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer: "
+                           "std::ostream::flush() failed");
     }
   }
   return MARISA2_SUCCESS;
@@ -144,7 +155,7 @@ Error Writer::open(const char *filename) {
   std::unique_ptr<WriterImpl> impl(new (std::nothrow) WriterImpl);
   if (!impl) {
     return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
-                         "failed to open file: memory allocation failed");
+                         "failed to open file: new WriterImpl failed");
   }
 
   Error error = impl->open(filename);
@@ -163,7 +174,7 @@ Error Writer::open(std::FILE *file) {
   std::unique_ptr<WriterImpl> impl(new (std::nothrow) WriterImpl);
   if (!impl) {
     return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
-                         "failed to open file: memory allocation failed");
+                         "failed to open file: new WriterImpl failed");
   }
 
   Error error = impl->open(file);
@@ -182,7 +193,7 @@ Error Writer::open(int fd) {
   std::unique_ptr<WriterImpl> impl(new (std::nothrow) WriterImpl);
   if (!impl) {
     return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
-                         "failed to open file: memory allocation failed");
+                         "failed to open file: new WriterImpl failed");
   }
 
   Error error = impl->open(fd);
@@ -201,7 +212,7 @@ Error Writer::open(std::ostream &stream) {
   std::unique_ptr<WriterImpl> impl(new (std::nothrow) WriterImpl);
   if (!impl) {
     return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
-                         "failed to open file: memory allocation failed");
+                         "failed to open file: new WriterImpl failed");
   }
 
   Error error = impl->open(stream);
@@ -220,7 +231,7 @@ Error Writer::write_objs(const void *objs, std::size_t obj_size,
 
   if (obj_size == 0) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
-                         "failed to write objects: invalid object size");
+                         "failed to write objects: obj_size == 0");
   }
 
   if (num_objs == 0) {
@@ -235,7 +246,8 @@ Error Writer::write_objs(const void *objs, std::size_t obj_size,
 
 Error Writer::flush() noexcept {
   if (!impl_) {
-    return MARISA2_ERROR(MARISA2_STATE_ERROR, "failed to flush buffer");
+    return MARISA2_ERROR(MARISA2_STATE_ERROR,
+                         "failed to flush buffer: not ready");
   }
 
   return impl_->flush();
