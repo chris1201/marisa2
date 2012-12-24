@@ -13,12 +13,14 @@ libmarisa2_include_HEADERS = \
 	marisa2/version.h
 
 libmarisa2_grimoire_la_SOURCES = \
+	marisa2/grimoire/mapper.cc \
 	marisa2/grimoire/reader.cc \
 	marisa2/grimoire/time.cc \
 	marisa2/grimoire/writer.cc
 
 libmarisa2_grimoire_includedir = ${includedir}/marisa2/grimoire
 libmarisa2_grimoire_include_HEADERS = \
+	marisa2/grimoire/mapper.h \
 	marisa2/grimoire/reader.h \
 	marisa2/grimoire/time.h \
 	marisa2/grimoire/writer.h
