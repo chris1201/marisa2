@@ -114,10 +114,17 @@ Error WriterImpl::write(const void *bytes, std::size_t num_bytes) {
 
 Error WriterImpl::flush() noexcept {
   if (fd_ != -1) {
+#ifdef _WIN32
+    if (::_commit(fd_) != 0) {
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer: "
+                           "::_commit() failed");
+    }
+#else  // _WIN32
     if (::fsync(fd_) != 0) {
       return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer: "
                            "::fsync() failed");
     }
+#endif  // _WIN32
   } else if (file_ != nullptr) {
     if (std::fflush(file_) != 0) {
       return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to flush buffer: "
