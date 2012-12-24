@@ -46,19 +46,20 @@ typedef Marisa2ErrorCode ErrorCode;
 
 class Error {
  public:
-  constexpr Error() : message_(nullptr) {}
-  constexpr Error(ErrorCode, const char *message) : message_(message) {}
+  constexpr Error() noexcept : message_(nullptr) {}
+  constexpr Error(ErrorCode, const char *message) noexcept
+    : message_(message) {}
 
-  explicit constexpr operator bool() {
+  explicit constexpr operator bool() noexcept {
     return message_ != nullptr;
   }
 
-  constexpr const char *message() {
+  constexpr const char *message() noexcept {
     return message_;
   }
 
   // This function parses an error message and returns its error code.
-  ErrorCode code() const;
+  ErrorCode code() const noexcept;
 
  private:
   const char *message_;
