@@ -51,7 +51,8 @@ class ReaderImpl {
 Error ReaderImpl::open(const char *filename) {
   file_ = std::fopen(filename, "rb");
   if (file_ == nullptr) {
-    return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to open file");
+    return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to open file: "
+                         "std::fopen() failed");
   }
   needs_fclose_ = true;
   return MARISA2_SUCCESS;
@@ -80,25 +81,32 @@ Error ReaderImpl::read(void *buf, std::size_t num_bytes) {
       const unsigned int count = std::min(num_bytes,
           static_cast<std::size_t>(std::numeric_limits<int>::max()));
       const int num_bytes_read = ::_read(fd_, buf, count);
+      if (num_bytes_read <= 0) {
+        return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to read bytes: "
+                             "::_read() failed");
+      }
 #else  // _WIN32
       // TODO: constexpr is better.
       const ::size_t count = std::min(num_bytes,
           static_cast<std::size_t>(std::numeric_limits< ::ssize_t>::max()));
       const ::ssize_t num_bytes_read = ::read(fd_, buf, count);
-#endif  // _WIN32
       if (num_bytes_read <= 0) {
-        return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to read bytes");
+        return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to read bytes: "
+                             "::read() failed");
       }
+#endif  // _WIN32
       buf = static_cast<char *>(buf) + num_bytes_read;
       num_bytes -= num_bytes_read;
     }
   } else if (file_ != nullptr) {
     if (std::fread(buf, 1, num_bytes, file_) != num_bytes) {
-      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to read bytes");
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to read bytes: "
+                           "std::fread() failed");
     }
   } else if (stream_ != nullptr) {
     if (!stream_->read(static_cast<char *>(buf), num_bytes)) {
-      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to read bytes");
+      return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to read bytes: "
+                           "std::istream::read() failed");
     }
   }
   return MARISA2_SUCCESS;
@@ -124,7 +132,7 @@ Error Reader::open(const char *filename) {
   std::unique_ptr<ReaderImpl> impl(new (std::nothrow) ReaderImpl);
   if (!impl) {
     return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
-                         "failed to open file: memory allocation failed");
+                         "failed to open file: new ReaderImpl failed");
   }
 
   Error error = impl->open(filename);
@@ -143,7 +151,7 @@ Error Reader::open(std::FILE *file) {
   std::unique_ptr<ReaderImpl> impl(new (std::nothrow) ReaderImpl);
   if (!impl) {
     return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
-                         "failed to open file: memory allocation failed");
+                         "failed to open file: new ReaderImpl failed");
   }
 
   Error error = impl->open(file);
@@ -162,7 +170,7 @@ Error Reader::open(int fd) {
   std::unique_ptr<ReaderImpl> impl(new (std::nothrow) ReaderImpl);
   if (!impl) {
     return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
-                         "failed to open file: memory allocation failed");
+                         "failed to open file: new ReaderImpl failed");
   }
 
   Error error = impl->open(fd);
@@ -181,7 +189,7 @@ Error Reader::open(std::istream &stream) {
   std::unique_ptr<ReaderImpl> impl(new (std::nothrow) ReaderImpl);
   if (!impl) {
     return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
-                         "failed to open file: memory allocation failed");
+                         "failed to open file: new ReaderImpl failed");
   }
 
   Error error = impl->open(stream);
@@ -200,7 +208,7 @@ Error Reader::read_objs(void *objs, std::size_t obj_size,
 
   if (obj_size == 0) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
-                         "failed to read objects: invalid object size");
+                         "failed to read objects: obj_size == 0");
   }
 
   if (num_objs == 0) {
