@@ -39,7 +39,7 @@ class ReaderImpl {
   Error open(int fd) noexcept;
   Error open(std::istream &stream) noexcept;
 
-  Error read(void *buf, std::size_t size) noexcept;
+  Error read(void *bytes, std::size_t num_bytes) noexcept;
 
  private:
   std::FILE *file_;
@@ -72,32 +72,32 @@ Error ReaderImpl::open(std::istream &stream) {
   return MARISA2_SUCCESS;
 }
 
-Error ReaderImpl::read(void *buf, std::size_t size) {
+Error ReaderImpl::read(void *buf, std::size_t num_bytes) {
   if (fd_ != -1) {
-    while (size != 0) {
+    while (num_bytes != 0) {
 #ifdef _WIN32
       // TODO: constexpr is better.
-      const unsigned int count = std::min(size,
+      const unsigned int count = std::min(num_bytes,
           static_cast<std::size_t>(std::numeric_limits<int>::max()));
-      const int size_read = ::_read(fd_, buf, count);
+      const int num_bytes_read = ::_read(fd_, buf, count);
 #else  // _WIN32
       // TODO: constexpr is better.
-      const ::size_t count = std::min(size,
+      const ::size_t count = std::min(num_bytes,
           static_cast<std::size_t>(std::numeric_limits< ::ssize_t>::max()));
-      const ::ssize_t size_read = ::read(fd_, buf, count);
+      const ::ssize_t num_bytes_read = ::read(fd_, buf, count);
 #endif  // _WIN32
-      if (size_read <= 0) {
+      if (num_bytes_read <= 0) {
         return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to read bytes");
       }
-      buf = static_cast<char *>(buf) + size_read;
-      size -= size_read;
+      buf = static_cast<char *>(buf) + num_bytes_read;
+      num_bytes -= num_bytes_read;
     }
   } else if (file_ != nullptr) {
-    if (std::fread(buf, 1, size, file_) != size) {
+    if (std::fread(buf, 1, num_bytes, file_) != num_bytes) {
       return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to read bytes");
     }
   } else if (stream_ != nullptr) {
-    if (!stream_->read(static_cast<char *>(buf), size)) {
+    if (!stream_->read(static_cast<char *>(buf), num_bytes)) {
       return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to read bytes");
     }
   }
@@ -191,7 +191,7 @@ Error Reader::open(std::istream &stream) {
   return error;
 }
 
-Error Reader::read_objs(void *buf, std::size_t obj_size,
+Error Reader::read_objs(void *objs, std::size_t obj_size,
                         std::uint32_t num_objs) {
   if (!impl_) {
     return MARISA2_ERROR(MARISA2_STATE_ERROR,
@@ -210,11 +210,7 @@ Error Reader::read_objs(void *buf, std::size_t obj_size,
                          "failed to read objects: too many objects");
   }
 
-  return read_bytes(buf, obj_size * num_objs);
-}
-
-Error Reader::read_bytes(void *buf, std::size_t num_bytes) {
-  return impl_->read(buf, num_bytes);
+  return impl_->read(objs, obj_size * num_objs);
 }
 
 }  // namespace grimoire

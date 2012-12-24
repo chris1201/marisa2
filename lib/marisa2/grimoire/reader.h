@@ -41,9 +41,8 @@ class Reader {
  private:
   std::unique_ptr<ReaderImpl> impl_;
 
-  Error read_objs(void *buf, std::size_t obj_size,
+  Error read_objs(void *objs, std::size_t obj_size,
                   std::uint32_t num_objs) noexcept;
-  Error read_bytes(void *buf, std::size_t num_bytes) noexcept;
 };
 
 }  // namespace grimoire
