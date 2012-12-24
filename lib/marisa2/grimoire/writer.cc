@@ -112,7 +112,7 @@ Error WriterImpl::write(const void *bytes, std::size_t num_bytes) {
   return MARISA2_SUCCESS;
 }
 
-Error WriterImpl::flush() noexcept {
+Error WriterImpl::flush() {
   if (fd_ != -1) {
 #ifdef _WIN32
     if (::_commit(fd_) != 0) {
@@ -247,7 +247,7 @@ Error Writer::write_objs(const void *objs, std::size_t obj_size,
   return impl_->write(objs, obj_size * num_objs);
 }
 
-Error Writer::flush() noexcept {
+Error Writer::flush() {
   if (!impl_) {
     return MARISA2_ERROR(MARISA2_STATE_ERROR,
                          "failed to flush buffer: not ready");
