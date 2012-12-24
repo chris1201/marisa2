@@ -1,4 +1,4 @@
-AM_CXXFLAGS = -Wall -Weffc++ -Wextra -D_DEBUG -I../lib
+AM_CXXFLAGS = @AM_CXXFLAGS@ -I${top_srcdir}/lib
 
 TESTS = \
 	test

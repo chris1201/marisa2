@@ -1,6 +1,3 @@
-AM_CXXFLAGS = -Wall -Weffc++ -Wextra
-#AM_CXXFLAGS = -Wall -Weffc++ -Wextra -D_DEBUG
-
 lib_LTLIBRARIES = libmarisa2.la
 
 noinst_LTLIBRARIES = libmarisa2_grimoire.la

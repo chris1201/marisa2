@@ -13,7 +13,11 @@ AC_PROG_INSTALL
 
 AC_CONFIG_MACRO_DIR([m4])
 
-CXXFLAGS="${CXXFLAGS} -Wall -Wextra -std=c++0x"
+AM_CXXFLAGS="-Wall -Wextra -std=c++0x"
+AM_LDFLAGS="-no-undefined"
+
+AC_SUBST([AM_CXXFLAGS])
+AC_SUBST([AM_LDFLAGS])
 
 # Checks for libraries.
 
@@ -47,7 +51,8 @@ echo
 echo "${PACKAGE_NAME} ${PACKAGE_VERSION} configuration:"
 echo "-----------------------"
 echo "  CXX:       ${CXX}"
-echo "  CXXFLAGS:  ${CXXFLAGS}"
+echo "  CXXFLAGS:  ${AM_CXXFLAGS} ${CXXFLAGS}"
+echo "  LDFLAGS:   ${AM_LDFLAGS} ${LDFLAGS}"
 echo "  LIBS:      ${LIBS}"
 echo "  PREFIX:    ${prefix}"
 echo

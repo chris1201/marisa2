@@ -1,5 +1,4 @@
-AM_CXXFLAGS = -Wall -Weffc++ -Wextra -I../lib
-#AM_CXXFLAGS = -Wall -Weffc++ -Wextra -D_DEBUG -I../lib
+AM_CXXFLAGS = @AM_CXXFLAGS@ -I${top_srcdir}/lib
 
 bin_PROGRAMS = \
 	tool
