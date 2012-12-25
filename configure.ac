@@ -6,7 +6,6 @@ AC_INIT([marisa2], [pre-alpha], [syata@acm.org])
 AC_CONFIG_SRCDIR([lib/marisa2.h])
 AM_INIT_AUTOMAKE
 
-# Checks for programs.
 LT_INIT([win32-dll])
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -16,17 +15,6 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_CXXFLAGS="-Wall -Wextra -std=c++0x -fno-exceptions"
 AM_LDFLAGS="-no-undefined"
 
-AC_SUBST([AM_CXXFLAGS])
-AC_SUBST([AM_LDFLAGS])
-
-# Checks for libraries.
-
-# Checks for header files.
-
-# Checks for typedefs, structures, and compiler characteristics.
-
-# Checks for library functions.
-
 AC_MSG_CHECKING([whether to use popcnt (SSE4.2)])
 AC_ARG_ENABLE([popcnt],
               [AS_HELP_STRING([--enable-popcnt],
@@ -35,10 +23,13 @@ AC_ARG_ENABLE([popcnt],
               [enable_popcnt="no"])
 if test "x${enable_popcnt}" != "xno"
 then
-  CPPFLAGS="$CPPFLAGS -DMARISA2_USE_POPCNT -msse4.2"
+  AM_CXXFLAGS="$AM_CXXFLAGS -DMARISA2_USE_POPCNT -msse4.2"
   enable_popcnt="yes"
 fi
 AC_MSG_RESULT([${enable_popcnt}])
+
+AC_SUBST([AM_CXXFLAGS])
+AC_SUBST([AM_LDFLAGS])
 
 AC_CONFIG_FILES([Makefile
                  marisa2.pc
@@ -49,10 +40,9 @@ AC_OUTPUT
 
 echo
 echo "${PACKAGE_NAME} ${PACKAGE_VERSION} configuration:"
-echo "-----------------------"
+echo "-------------------------------"
 echo "  CXX:       ${CXX}"
 echo "  CXXFLAGS:  ${AM_CXXFLAGS} ${CXXFLAGS}"
 echo "  LDFLAGS:   ${AM_LDFLAGS} ${LDFLAGS}"
-echo "  LIBS:      ${LIBS}"
 echo "  PREFIX:    ${prefix}"
 echo
