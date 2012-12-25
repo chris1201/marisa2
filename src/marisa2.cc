@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <marisa2/utility.h>
+#include <marisa2.h>
 
 namespace {
 
