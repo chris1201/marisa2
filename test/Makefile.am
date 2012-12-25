@@ -1,19 +1,17 @@
-AM_CXXFLAGS = @AM_CXXFLAGS@ -I${top_srcdir}/lib
+AM_CXXFLAGS = @AM_CXXFLAGS@ -I${top_srcdir}/lib -DGTEST_HAS_PTHREAD=0
 
-TESTS = \
-	mapper-test \
-	reader-test \
-	writer-test
+TESTS = test-all
 
-check_PROGRAMS = $(TESTS)
+check_PROGRAMS = ${TESTS}
 
-noinst_HEADERS =
+test_all_SOURCES = \
+	gtest/gtest-all.cc \
+	gtest/gtest_main.cc \
+	mapper-test.cc \
+	reader-test.cc \
+	writer-test.cc
 
-mapper_test_SOURCES = mapper-test.cc
-mapper_test_LDADD = $(top_builddir)/lib/libmarisa2.la
+test_all_LDADD = ${top_builddir}/lib/libmarisa2.la
 
-reader_test_SOURCES = reader-test.cc
-reader_test_LDADD = $(top_builddir)/lib/libmarisa2.la
-
-writer_test_SOURCES = writer-test.cc
-writer_test_LDADD = $(top_builddir)/lib/libmarisa2.la
+noinst_HEADERS = \
+	gtest/gtest.h
