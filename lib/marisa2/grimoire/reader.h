@@ -12,7 +12,7 @@ namespace grimoire {
 
 class ReaderImpl;
 
-class Reader {
+class MARISA2_DLL_EXPORT Reader {
  public:
   Reader() noexcept;
   ~Reader() noexcept;

@@ -1,6 +1,8 @@
 #ifndef MARISA2_ERROR_H
 #define MARISA2_ERROR_H
 
+#include "features.h"
+
 // TODO: Refine error codes and comments.
 
 enum Marisa2ErrorCode {
@@ -44,7 +46,7 @@ namespace marisa2 {
 
 typedef Marisa2ErrorCode ErrorCode;
 
-class Error {
+class MARISA2_DLL_EXPORT Error {
  public:
   constexpr Error() noexcept : message_(nullptr) {}
   constexpr Error(ErrorCode, const char *message) noexcept

@@ -12,7 +12,7 @@ namespace grimoire {
 
 class WriterImpl;
 
-class Writer {
+class MARISA2_DLL_EXPORT Writer {
  public:
   Writer() noexcept;
   ~Writer() noexcept;

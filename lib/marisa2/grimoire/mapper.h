@@ -11,7 +11,7 @@ namespace grimoire {
 
 class MapperImpl;
 
-class Mapper {
+class MARISA2_DLL_EXPORT Mapper {
  public:
   Mapper() noexcept;
   ~Mapper() noexcept;
