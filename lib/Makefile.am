@@ -33,6 +33,8 @@ include_HEADERS = marisa2.h
 
 FORCE:
 
+marisa2/utility.cc: marisa2/version.h
+
 marisa2/version.h: FORCE
 	TOP_SRCDIR="${top_srcdir}" "${srcdir}/version.sh"
 
