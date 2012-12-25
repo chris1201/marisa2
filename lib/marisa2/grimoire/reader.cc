@@ -155,7 +155,7 @@ Error Reader::open(std::FILE *file) {
 
 Error Reader::open(int fd) {
   if (fd == -1) {
-    return MARISA2_ERROR(MARISA2_CODE_ERROR,
+    return MARISA2_ERROR(MARISA2_IO_ERROR,
                          "failed to open file: fd == -1");
   }
 
@@ -174,7 +174,7 @@ Error Reader::open(int fd) {
 
 Error Reader::open(std::istream &stream) {
   if (!stream) {
-    return MARISA2_ERROR(MARISA2_STATE_ERROR,
+    return MARISA2_ERROR(MARISA2_IO_ERROR,
                          "failed to open file: invalid stream");
   }
 

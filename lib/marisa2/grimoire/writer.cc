@@ -185,7 +185,7 @@ Error Writer::open(std::FILE *file) {
 
 Error Writer::open(int fd) {
   if (fd == -1) {
-    return MARISA2_ERROR(MARISA2_CODE_ERROR,
+    return MARISA2_ERROR(MARISA2_IO_ERROR,
                          "failed to open file: fd == -1");
   }
 
@@ -204,7 +204,7 @@ Error Writer::open(int fd) {
 
 Error Writer::open(std::ostream &stream) {
   if (!stream) {
-    return MARISA2_ERROR(MARISA2_STATE_ERROR,
+    return MARISA2_ERROR(MARISA2_IO_ERROR,
                          "failed to open file: invalid stream");
   }
 
