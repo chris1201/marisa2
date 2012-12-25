@@ -22,5 +22,6 @@
 /src/marisa2
 /src/marisa2.exe
 /test/test-all
+/test/test-all.exe
 Makefile
 Makefile.in
