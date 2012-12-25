@@ -13,6 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <random>
+#include <vector>
 
 #include <marisa2/grimoire/reader.h>
 
@@ -63,40 +64,50 @@ class ReaderTest : public testing::Test {
   void ReadData(marisa2::grimoire::Reader &reader);
 
  private:
-  static constexpr std::size_t NUM_BYTES = 3;
-  static constexpr std::size_t NUM_WORDS = 2;
-  static constexpr std::size_t NUM_DWORDS = 5;
+  static constexpr std::size_t MIN_NUM_OBJS = 1 << 12;
+  static constexpr std::size_t MAX_NUM_OBJS = 1 << 16;
 
-  std::uint8_t bytes_[NUM_BYTES];
-  std::uint16_t words_[NUM_WORDS];
-  std::uint32_t dwords_[NUM_DWORDS];
+  std::vector<std::uint8_t> bytes_;
+  std::vector<std::uint16_t> words_;
+  std::vector<std::uint32_t> dwords_;
+
+  static std::mt19937 random_;
 };
 
+std::mt19937 ReaderTest::random_;
+
 void ReaderTest::CreateFile() {
-  std::mt19937 random;
-  for (std::size_t i = 0; i < NUM_BYTES; ++i) {
-    bytes_[i] = static_cast<std::uint8_t>(random());
+  bytes_.resize(MIN_NUM_OBJS
+      + (random_() % (MIN_NUM_OBJS - MIN_NUM_OBJS + 1)));
+  words_.resize(MIN_NUM_OBJS
+      + (random_() % (MIN_NUM_OBJS - MIN_NUM_OBJS + 1)));
+  dwords_.resize(MIN_NUM_OBJS
+      + (random_() % (MIN_NUM_OBJS - MIN_NUM_OBJS + 1)));
+
+  for (std::size_t i = 0; i < bytes_.size(); ++i) {
+    bytes_[i] = static_cast<std::uint8_t>(random_());
   }
-  for (std::size_t i = 0; i < NUM_WORDS; ++i) {
-    words_[i] = static_cast<std::uint16_t>(random());
+  for (std::size_t i = 0; i < words_.size(); ++i) {
+    words_[i] = static_cast<std::uint16_t>(random_());
   }
-  for (std::size_t i = 0; i < NUM_DWORDS; ++i) {
-    dwords_[i] = static_cast<std::uint32_t>(random());
+  for (std::size_t i = 0; i < dwords_.size(); ++i) {
+    dwords_[i] = static_cast<std::uint32_t>(random_());
   }
 
   std::FILE *file = std::fopen(FILENAME, "wb");
   ASSERT_NE(nullptr, file);
   FilePointerCloser closer(file);
 
-  const std::size_t num_bytes = NUM_BYTES;
-  const std::size_t num_words = NUM_WORDS;
-  const std::size_t num_dwords = NUM_DWORDS;
-  ASSERT_EQ(num_bytes, std::fwrite(bytes_, sizeof(std::uint8_t),
-                                   NUM_BYTES, file));
-  ASSERT_EQ(num_words, std::fwrite(words_, sizeof(std::uint16_t),
-                                   NUM_WORDS, file));
-  ASSERT_EQ(num_dwords, std::fwrite(dwords_, sizeof(std::uint32_t),
-                                    NUM_DWORDS, file));
+  ASSERT_EQ(bytes_.size(),
+            std::fwrite(&*bytes_.begin(), sizeof(std::uint8_t),
+                        bytes_.size(), file));
+  ASSERT_EQ(words_.size(),
+            std::fwrite(&*words_.begin(), sizeof(std::uint16_t),
+                        words_.size(), file));
+  ASSERT_EQ(dwords_.size(),
+            std::fwrite(&*dwords_.begin(), sizeof(std::uint32_t),
+                        dwords_.size(), file));
+
   ASSERT_EQ(0, std::fflush(file));
 }
 
@@ -104,23 +115,23 @@ void ReaderTest::ReadData(marisa2::grimoire::Reader &reader) {
   marisa2::Error error;
 
   std::uint8_t byte;
-  for (std::size_t i = 0; i < NUM_BYTES; ++i) {
+  for (std::size_t i = 0; i < bytes_.size(); ++i) {
     error = reader.read(&byte);
     ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
     ASSERT_EQ(bytes_[i], byte);
   }
 
   std::uint16_t word;
-  for (std::size_t i = 0; i < NUM_WORDS; ++i) {
+  for (std::size_t i = 0; i < words_.size(); ++i) {
     error = reader.read(&word, 1);
     ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
     ASSERT_EQ(words_[i], word);
   }
 
-  std::uint32_t buf[NUM_DWORDS];
-  error = reader.read(buf, NUM_DWORDS);
+  std::vector<std::uint32_t> buf(dwords_.size());
+  error = reader.read(&*buf.begin(), dwords_.size());
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
-  for (std::size_t i = 0; i < NUM_DWORDS; ++i) {
+  for (std::size_t i = 0; i < dwords_.size(); ++i) {
     ASSERT_EQ(dwords_[i], buf[i]);
   }
 
