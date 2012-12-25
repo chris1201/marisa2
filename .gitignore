@@ -21,6 +21,6 @@
 /missing
 /src/marisa2
 /src/marisa2.exe
-/test/test
+/test/*-test
 Makefile
 Makefile.in
