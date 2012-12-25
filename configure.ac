@@ -12,7 +12,7 @@ AC_PROG_INSTALL
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_CXXFLAGS="-Wall -Wextra -std=c++0x -fno-exceptions"
+AM_CXXFLAGS="-Wall -Wextra -std=c++0x"
 AM_LDFLAGS="-no-undefined"
 
 AC_MSG_CHECKING([whether to use popcnt (SSE4.2)])

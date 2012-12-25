@@ -1,3 +1,5 @@
+AM_CXXFLAGS = @AM_CXXFLAGS@ -fno-exceptions
+
 lib_LTLIBRARIES = libmarisa2.la
 
 noinst_LTLIBRARIES = libmarisa2_grimoire.la
