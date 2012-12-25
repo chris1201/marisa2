@@ -55,7 +55,7 @@ class Error {
   }
 
   constexpr const char *message() noexcept {
-    return message_;
+    return (message_ != nullptr) ? message_ : "";
   }
 
   // This function parses an error message and returns its error code.
