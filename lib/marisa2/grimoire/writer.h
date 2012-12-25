@@ -30,7 +30,12 @@ class Writer {
   Error open(std::ostream &stream) noexcept;
 
   template <typename T>
-  Error write(const T *objs, std::size_t num_objs = 1) noexcept {
+  Error write(const T &obj) noexcept {
+    return write_objs(&obj, sizeof(T), 1);
+  }
+
+  template <typename T>
+  Error write(const T *objs, std::size_t num_objs) noexcept {
     return write_objs(objs, sizeof(T), num_objs);
   }
 
