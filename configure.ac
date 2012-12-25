@@ -13,7 +13,17 @@ AC_PROG_INSTALL
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_CXXFLAGS="-Wall -Wextra -std=c++0x"
-AM_LDFLAGS="-no-undefined"
+
+AC_CANONICAL_HOST
+
+case "${host}" in
+  *-*-mingw*|*-*-cygwin*)
+    AM_LDFLAGS="-no-undefined"
+    ;;
+  *)
+    AM_LDFLAGS=""
+    ;;
+esac
 
 AC_MSG_CHECKING([whether to use popcnt (SSE4.2)])
 AC_ARG_ENABLE([popcnt],
@@ -41,6 +51,7 @@ AC_OUTPUT
 echo
 echo "${PACKAGE_NAME} ${PACKAGE_VERSION} configuration:"
 echo "-------------------------------"
+echo "  HOST:      ${host}"
 echo "  CXX:       ${CXX}"
 echo "  CXXFLAGS:  ${AM_CXXFLAGS} ${CXXFLAGS}"
 echo "  LDFLAGS:   ${AM_LDFLAGS} ${LDFLAGS}"
