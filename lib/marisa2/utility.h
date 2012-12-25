@@ -8,7 +8,7 @@ class Utility {
   Utility() = delete;
   ~Utility() = delete;
 
-  static const char *version();
+  static const char *version() noexcept;
 };
 
 }  // namespace marisa2
