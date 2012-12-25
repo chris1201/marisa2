@@ -5,11 +5,13 @@ noinst_LTLIBRARIES = libmarisa2_grimoire.la
 libmarisa2_la_LIBADD = libmarisa2_grimoire.la
 
 libmarisa2_la_SOURCES = \
-	marisa2/error.cc
+	marisa2/error.cc \
+	marisa2/utility.cc
 
 libmarisa2_includedir = ${includedir}/marisa2
 libmarisa2_include_HEADERS = \
 	marisa2/error.h \
+	marisa2/utility.h \
 	marisa2/version.h
 
 libmarisa2_grimoire_la_SOURCES = \
