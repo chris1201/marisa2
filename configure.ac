@@ -18,6 +18,7 @@ AC_CANONICAL_HOST
 
 case "${host}" in
   *-*-mingw*|*-*-cygwin*)
+    AM_CXXFLAGS="${AM_CXXFLAGS} -DMARISA2_BUILD_DLL"
     AM_LDFLAGS="-no-undefined"
     ;;
   *)
