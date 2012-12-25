@@ -4,4 +4,4 @@ bin_PROGRAMS = \
 	marisa2
 
 marisa2_SOURCES = marisa2.cc
-marisa2_LDADD = ../lib/libmarisa2.la
+marisa2_LDADD = ${top_builddir}/lib/libmarisa2.la
