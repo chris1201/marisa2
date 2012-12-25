@@ -1,6 +1,5 @@
 *.a
 *.dll
-*.exe
 *.la
 *.lo
 *.log
@@ -20,7 +19,8 @@
 /ltmain.sh
 /marisa2.pc
 /missing
-/src/tool
+/src/marisa2
+/src/marisa2.exe
 /test/test
 Makefile
 Makefile.in

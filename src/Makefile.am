@@ -1,9 +1,7 @@
 AM_CXXFLAGS = @AM_CXXFLAGS@ -I${top_srcdir}/lib
 
 bin_PROGRAMS = \
-	tool
+	marisa2
 
-noinst_HEADERS =
-
-tool_SOURCES = tool.cc
-tool_LDADD = ../lib/libmarisa2.la
+marisa2_SOURCES = marisa2.cc
+marisa2_LDADD = ../lib/libmarisa2.la
