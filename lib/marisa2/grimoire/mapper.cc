@@ -22,6 +22,9 @@ class MapperImpl {
   MapperImpl();
   ~MapperImpl();
 
+  MapperImpl(const MapperImpl &) = delete;
+  MapperImpl &operator=(const MapperImpl &) = delete;
+
   Error open(const char *filename);
   Error open(const void *address, std::size_t num_bytes);
 
