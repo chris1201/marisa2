@@ -141,6 +141,7 @@ TEST_F(MapperTest, Filename) {
   ASSERT_TRUE(static_cast<bool>(file));
 
   WriteData(file);
+  file.close();
 
   error = mapper.open(FILENAME);
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
