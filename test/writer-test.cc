@@ -61,7 +61,7 @@ class WriterTest : public testing::Test {
     int fd_;
   };
 
-  void CreateFile(marisa2::grimoire::Writer &writer);
+  void WriteData(marisa2::grimoire::Writer &writer);
   void ReadData();
 
  private:
@@ -77,7 +77,7 @@ class WriterTest : public testing::Test {
 
 std::mt19937 WriterTest::random_;
 
-void WriterTest::CreateFile(marisa2::grimoire::Writer &writer) {
+void WriterTest::WriteData(marisa2::grimoire::Writer &writer) {
   marisa2::Error error;
 
   bytes_.resize(MIN_NUM_OBJS
@@ -185,7 +185,7 @@ TEST_F(WriterTest, Filename) {
   error = writer.open(FILENAME);
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
 
-  CreateFile(writer);
+  WriteData(writer);
   ReadData();
 }
 
@@ -207,7 +207,7 @@ TEST_F(WriterTest, FileDescriptor) {
   error = writer.open(fd);
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
 
-  CreateFile(writer);
+  WriteData(writer);
   ReadData();
 }
 
@@ -225,7 +225,7 @@ TEST_F(WriterTest, FilePointer) {
   error = writer.open(file);
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
 
-  CreateFile(writer);
+  WriteData(writer);
   ReadData();
 }
 
@@ -246,6 +246,6 @@ TEST_F(WriterTest, OutputStream) {
   error = writer.open(file);
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
 
-  CreateFile(writer);
+  WriteData(writer);
   ReadData();
 }
