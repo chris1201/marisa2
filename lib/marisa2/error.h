@@ -3,8 +3,6 @@
 
 #include "features.h"
 
-// TODO: Refine error codes and comments.
-
 enum Marisa2ErrorCode {
   // MARISA2_NO_ERROR means that a requested operation has succeeded.
   MARISA2_NO_ERROR      = 0,
@@ -61,6 +59,7 @@ class MARISA2_DLL_EXPORT Error {
   }
 
   // This function parses an error message and returns its error code.
+  // If message_ == nullptr, this function returns MARISA2_NO_ERROR.
   ErrorCode code() const noexcept;
 
  private:
