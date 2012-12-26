@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
 #include <cstdint>
-#include <cstring>
 #include <fstream>
 #include <random>
 #include <sstream>
@@ -70,23 +69,27 @@ void MapperTest::WriteData(std::ostream &stream) {
 void MapperTest::ReadData(marisa2::grimoire::Mapper &mapper) {
   marisa2::Error error;
 
-  const std::uint8_t *bytes;
-  const std::uint16_t *words;
+  const std::uint8_t *byte;
+  for (std::size_t i = 0; i < bytes_.size(); ++i) {
+    error = mapper.map(&byte);
+    ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+    ASSERT_EQ(bytes_[i], *byte);
+  }
+
+  const std::uint16_t *word;
+  for (std::size_t i = 0; i < words_.size(); ++i) {
+    error = mapper.map(&word, 1);
+    ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+    ASSERT_EQ(words_[i], *word);
+  }
+
   const std::uint32_t *dwords;
 
-  error = mapper.map(&bytes, bytes_.size());
-  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
-  error = mapper.map(&words, words_.size());
-  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
   error = mapper.map(&dwords, dwords_.size());
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
-
-  ASSERT_EQ(0, std::memcmp(bytes, &*bytes_.begin(),
-                           sizeof(std::uint8_t) * bytes_.size()));
-  ASSERT_EQ(0, std::memcmp(words, &*words_.begin(),
-                           sizeof(std::uint16_t) * words_.size()));
-  ASSERT_EQ(0, std::memcmp(dwords, &*dwords_.begin(),
-                           sizeof(std::uint32_t) * dwords_.size()));
+  for (std::size_t i = 0; i < dwords_.size(); ++i) {
+    ASSERT_EQ(dwords_[i], dwords[i]);
+  }
 }
 
 TEST_F(MapperTest, DefaultConstructor) {
@@ -138,7 +141,6 @@ TEST_F(MapperTest, Filename) {
   ASSERT_TRUE(static_cast<bool>(file));
 
   WriteData(file);
-  file.close();
 
   error = mapper.open(FILENAME);
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
