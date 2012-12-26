@@ -28,7 +28,8 @@ class MARISA2_DLL_EXPORT Mapper {
 
   template <typename T>
   Error map(const T **objs, std::size_t num_objs = 1) noexcept {
-    return map_objs(objs, sizeof(T), num_objs);
+    return map_objs(reinterpret_cast<const void **>(objs),
+                    sizeof(T), num_objs);
   }
 
  private:
