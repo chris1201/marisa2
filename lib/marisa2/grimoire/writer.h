@@ -33,7 +33,6 @@ class MARISA2_DLL_EXPORT Writer {
   Error write(const T &obj) noexcept {
     return write_objs(&obj, sizeof(T), 1);
   }
-
   template <typename T>
   Error write(const T *objs, std::size_t num_objs) noexcept {
     return write_objs(objs, sizeof(T), num_objs);
