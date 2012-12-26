@@ -38,11 +38,6 @@ class MapperImpl {
 #else  // _WIN32
   int fd_;
 #endif  // _WIN32
-
-  void open_(const char *filename);
-  void open_(const void *ptr, std::size_t size);
-
-  const void *map_data(std::size_t size);
 };
 
 #ifdef _WIN32
