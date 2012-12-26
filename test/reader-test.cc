@@ -95,21 +95,18 @@ void ReaderTest::CreateFile() {
     dwords_[i] = static_cast<std::uint32_t>(random_());
   }
 
-  std::FILE *file = std::fopen(FILENAME, "wb");
-  ASSERT_NE(nullptr, file);
-  FilePointerCloser closer(file);
+  std::ofstream file(FILENAME, std::ios::binary);
+  ASSERT_TRUE(static_cast<bool>(file));
 
-  ASSERT_EQ(bytes_.size(),
-            std::fwrite(&*bytes_.begin(), sizeof(std::uint8_t),
-                        bytes_.size(), file));
-  ASSERT_EQ(words_.size(),
-            std::fwrite(&*words_.begin(), sizeof(std::uint16_t),
-                        words_.size(), file));
-  ASSERT_EQ(dwords_.size(),
-            std::fwrite(&*dwords_.begin(), sizeof(std::uint32_t),
-                        dwords_.size(), file));
+  file.write(reinterpret_cast<const char *>(&*bytes_.begin()),
+             sizeof(std::uint8_t) * bytes_.size());
+  file.write(reinterpret_cast<const char *>(&*words_.begin()),
+             sizeof(std::uint16_t) * words_.size());
+  file.write(reinterpret_cast<const char *>(&*dwords_.begin()),
+             sizeof(std::uint32_t) * dwords_.size());
 
-  ASSERT_EQ(0, std::fflush(file));
+  file.flush();
+  ASSERT_TRUE(static_cast<bool>(file));
 }
 
 void ReaderTest::ReadData(marisa2::grimoire::Reader &reader) {
