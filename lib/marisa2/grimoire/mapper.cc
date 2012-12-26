@@ -88,7 +88,8 @@ Error MapperImpl::open(const char *filename) {
   }
   size_ = static_cast<std::size_t>(st.st_size);
 
-  file_ = ::CreateFileA(filename, GENERIC_READ, FILE_SHARE_READ, nullptr,
+  file_ = ::CreateFileA(filename, GENERIC_READ, FILE_SHARE_DELETE |
+                        FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
                         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
   if (file_ == INVALID_HANDLE_VALUE) {
     return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to map file: "
