@@ -10,6 +10,8 @@ class MARISA2_DLL_EXPORT Utility {
   Utility() = delete;
   ~Utility() = delete;
 
+  // This function returns the library version.
+  // For example, "pre-alpha-64-gc3aead7".
   static const char *version() noexcept;
 };
 
