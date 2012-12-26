@@ -18,6 +18,7 @@ class ReaderImpl {
   ReaderImpl() noexcept
     : file_(nullptr), fd_(-1), stream_(nullptr), needs_fclose_(false) {}
   ~ReaderImpl() noexcept {
+    // file_ is closed if the reader is opened with a filename.
     if (needs_fclose_) {
       if (file_ != nullptr) {
         std::fclose(file_);
@@ -48,6 +49,8 @@ Error ReaderImpl::open(const char *filename) {
     return MARISA2_ERROR(MARISA2_IO_ERROR, "failed to open file: "
                          "std::fopen() failed");
   }
+
+  // The file will be closed in destructor.
   needs_fclose_ = true;
   return MARISA2_SUCCESS;
 }
