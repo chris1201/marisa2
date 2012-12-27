@@ -49,10 +49,10 @@ class MARISA2_DLL_EXPORT Error {
   constexpr Error() noexcept : message_(nullptr) {}
   constexpr Error(ErrorCode, const char *message) noexcept
     : message_(message) {}
-  ~Error() noexcept = default;
+  ~Error() = default;
 
-  constexpr Error(const Error &) noexcept = default;
-  Error &operator=(const Error &) noexcept = default;
+  constexpr Error(const Error &) = default;
+  Error &operator=(const Error &) = default;
 
   explicit constexpr operator bool() noexcept {
     return message_ != nullptr;

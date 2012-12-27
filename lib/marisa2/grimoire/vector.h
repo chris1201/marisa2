@@ -13,7 +13,7 @@ namespace grimoire {
 class MARISA2_DLL_EXPORT VectorImpl {
  public:
   VectorImpl() noexcept : address_(nullptr), size_(0), capacity_(0), buf_() {}
-  ~VectorImpl() noexcept = default;
+  ~VectorImpl() = default;
 
   VectorImpl(const VectorImpl &) = delete;
   VectorImpl &operator=(const VectorImpl &) = delete;
@@ -56,8 +56,8 @@ class Vector {
   static_assert(std::is_pod<T>::value, "T is not a POD type.");
 
  public:
-  Vector() noexcept = default;
-  ~Vector() noexcept = default;
+  Vector() = default;
+  ~Vector() = default;
 
   Vector(const Vector &) = delete;
   Vector &operator=(const Vector &) = delete;
