@@ -9,6 +9,7 @@ test_all_SOURCES = \
 	gtest/gtest_main.cc \
 	mapper-test.cc \
 	reader-test.cc \
+	vector-test.cc \
 	writer-test.cc
 
 test_all_LDADD = ${top_builddir}/lib/libmarisa2.la
