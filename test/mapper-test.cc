@@ -153,10 +153,10 @@ TEST_F(MapperTest, Address) {
   marisa2::Error error;
 
   marisa2::grimoire::Mapper mapper;
-  error = mapper.open(nullptr, 0);
+  error = mapper.open(nullptr, 1);
   ASSERT_EQ(MARISA2_NULL_ERROR, error.code()) << error.message();
   error = mapper.open("", 0);
-  ASSERT_EQ(MARISA2_RANGE_ERROR, error.code()) << error.message();
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
 
   std::stringstream stream;
   WriteData(stream);

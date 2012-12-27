@@ -192,14 +192,9 @@ Error Mapper::open(const char *filename) {
 }
 
 Error Mapper::open(const void *address, std::size_t num_bytes) {
-  if (address == nullptr) {
+  if ((address == nullptr) && (num_bytes != 0)) {
     return MARISA2_ERROR(MARISA2_NULL_ERROR,
                          "failed to map bytes: address == nullptr");
-  }
-
-  if (num_bytes == 0) {
-    return MARISA2_ERROR(MARISA2_RANGE_ERROR,
-                         "failed to map bytes: num_bytes == 0");
   }
 
   std::unique_ptr<MapperImpl> impl(new (std::nothrow) MapperImpl);
