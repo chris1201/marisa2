@@ -39,6 +39,10 @@ FORCE:
 marisa2/utility.cc: marisa2/version.h
 
 marisa2/version.h: FORCE
-	TOP_SRCDIR="${top_srcdir}" "${srcdir}/version.sh"
+	if [ -x "${srcdir}/version.sh" ]; then \
+		TOP_SRCDIR="${top_srcdir}" "${srcdir}/version.sh"; \
+	fi
 
 noinst_HEADERS =
+
+EXTRA_DIST = version.sh
