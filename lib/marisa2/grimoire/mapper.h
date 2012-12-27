@@ -16,6 +16,9 @@ class MARISA2_DLL_EXPORT Mapper {
   Mapper() noexcept;
   ~Mapper() noexcept;
 
+  Mapper(const Mapper &rhs) noexcept;
+  Mapper &operator=(const Mapper &rhs) noexcept;
+
   Mapper(Mapper &&rhs) noexcept;
   Mapper &operator=(Mapper &&rhs) noexcept;
 
@@ -33,7 +36,7 @@ class MARISA2_DLL_EXPORT Mapper {
   }
 
  private:
-  std::unique_ptr<MapperImpl> impl_;
+  std::shared_ptr<MapperImpl> impl_;
 
   Error map_objs(const void **objs, std::size_t obj_size,
                  std::size_t num_objs) noexcept;

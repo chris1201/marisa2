@@ -160,6 +160,12 @@ Error MapperImpl::map(const void **bytes, std::size_t num_bytes) {
 Mapper::Mapper() : impl_(nullptr) {}
 Mapper::~Mapper() {}
 
+Mapper::Mapper(const Mapper &rhs) : impl_(rhs.impl_) {}
+Mapper &Mapper::operator=(const Mapper &rhs) {
+  impl_ = rhs.impl_;
+  return *this;
+}
+
 Mapper::Mapper(Mapper &&rhs) : impl_(std::move(rhs.impl_)) {}
 Mapper &Mapper::operator=(Mapper &&rhs) {
   impl_ = std::move(rhs.impl_);
