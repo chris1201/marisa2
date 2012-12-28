@@ -100,6 +100,7 @@ class Vector {
     return MARISA2_SUCCESS;
   }
 
+  // TODO: Remove this function if unused.
   Error pop_back() noexcept {
     if (impl_.size() == 0) {
       return MARISA2_ERROR(MARISA2_STATE_ERROR,
