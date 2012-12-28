@@ -12,7 +12,16 @@ AC_PROG_INSTALL
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_CXXFLAGS="-Wall -Wextra -std=c++0x"
+AM_CXXFLAGS="-Wall -Wextra"
+
+OLD_CXXFLAGS="${CXXFLAGS}"
+CXXFLAGS="-std=c++11"
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
+                  [AM_CXXFLAGS="${AM_CXXFLAGS} -std=c++11"],
+                  [AM_CXXFLAGS="${AM_CXXFLAGS} -std=c++0x"])
+AC_LANG_POP([C++])
+CXXFLAGS="${OLD_CXXFLAGS}"
 
 AC_CANONICAL_HOST
 
