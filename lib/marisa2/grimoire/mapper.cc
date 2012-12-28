@@ -20,17 +20,17 @@ namespace grimoire {
 
 class MapperImpl {
  public:
-  MapperImpl();
-  ~MapperImpl();
+  MapperImpl() noexcept;
+  ~MapperImpl() noexcept;
 
   MapperImpl(const MapperImpl &) = delete;
   MapperImpl &operator=(const MapperImpl &) = delete;
 
-  Error open(const char *filename);
-  Error open(const void *address, std::size_t num_bytes);
+  Error open(const char *filename) noexcept;
+  Error open(const void *address, std::size_t num_bytes) noexcept;
 
-  Error map(const void **bytes, std::size_t num_bytes);
-  Error read(void *bytes, std::size_t num_bytes);
+  Error map(const void **bytes, std::size_t num_bytes) noexcept;
+  Error read(void *bytes, std::size_t num_bytes) noexcept;
 
  private:
   const void *ptr_;
