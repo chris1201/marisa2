@@ -8,15 +8,17 @@ namespace marisa2 {
 namespace grimoire {
 
 Error VectorImpl::map(Mapper &mapper, std::size_t obj_size,
-                      std::size_t num_objs) {
+                      const VectorHeader &header) {
   if (obj_size == 0) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
                          "failed to map vector: obj_size == 0");
-  } else if (num_objs > (std::numeric_limits<std::size_t>::max() / obj_size)) {
+  }
+  if (header.size > (std::numeric_limits<std::size_t>::max() / obj_size)) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
                          "failed to map vector: too many objects");
   }
 
+  const std::size_t num_objs = static_cast<std::size_t>(header.size);
   const char *objs;
   Error error = mapper.map(&objs, obj_size * num_objs);
   if (error) {
@@ -31,15 +33,17 @@ Error VectorImpl::map(Mapper &mapper, std::size_t obj_size,
 }
 
 Error VectorImpl::read(Reader &reader, std::size_t obj_size,
-                       std::size_t num_objs) {
+                       const VectorHeader &header) {
   if (obj_size == 0) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
                          "failed to read vector: obj_size == 0");
-  } else if (num_objs > (std::numeric_limits<std::size_t>::max() / obj_size)) {
+  }
+  if (header.size > (std::numeric_limits<std::size_t>::max() / obj_size)) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
                          "failed to read vector: too many objects");
   }
 
+  const std::size_t num_objs = static_cast<std::size_t>(header.size);
   std::unique_ptr<char[]> new_buf(
       new (std::nothrow) char[obj_size * num_objs]);
   if (!new_buf) {

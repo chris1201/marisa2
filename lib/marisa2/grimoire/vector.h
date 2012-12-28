@@ -1,6 +1,7 @@
 #ifndef MARISA2_GRIMOIRE_VECTOR_H
 #define MARISA2_GRIMOIRE_VECTOR_H
 
+#include <cstdint>
 #include <type_traits>
 
 #include "mapper.h"
@@ -9,6 +10,10 @@
 
 namespace marisa2 {
 namespace grimoire {
+
+struct VectorHeader {
+  std::uint64_t size;
+};
 
 class MARISA2_DLL_EXPORT VectorImpl {
  public:
@@ -19,9 +24,9 @@ class MARISA2_DLL_EXPORT VectorImpl {
   VectorImpl &operator=(const VectorImpl &) = delete;
 
   Error map(Mapper &mapper, std::size_t obj_size,
-            std::size_t num_objs) noexcept;
+            const VectorHeader &header) noexcept;
   Error read(Reader &reader, std::size_t obj_size,
-             std::size_t num_objs) noexcept;
+             const VectorHeader &header) noexcept;
 
   Error reserve(std::size_t obj_size, std::size_t num_objs) noexcept;
   Error reallocate(std::size_t obj_size, std::size_t num_objs) noexcept;
@@ -66,11 +71,11 @@ class Vector {
     return impl_.size() != 0;
   }
 
-  Error map(Mapper &mapper, std::size_t size) noexcept {
-    return impl_.map(mapper, sizeof(T), size);
+  Error map(Mapper &mapper, const VectorHeader &header) noexcept {
+    return impl_.map(mapper, sizeof(T), header);
   }
-  Error read(Reader &reader, std::size_t size) noexcept {
-    return impl_.read(reader, sizeof(T), size);
+  Error read(Reader &reader, const VectorHeader &header) noexcept {
+    return impl_.read(reader, sizeof(T), header);
   }
   Error write(Writer &writer) const noexcept {
     return writer.write(static_cast<const T *>(impl_.address()), impl_.size());
@@ -171,6 +176,9 @@ class Vector {
   }
   std::size_t capacity() const noexcept {
     return impl_.capacity();
+  }
+  VectorHeader header() const noexcept {
+    return VectorHeader{ impl_.size() };
   }
 
  private:
