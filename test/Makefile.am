@@ -8,6 +8,7 @@ test_all_SOURCES = \
 	gtest/gtest-all.cc \
 	gtest/gtest_main.cc \
 	mapper-test.cc \
+	pop-count-test.cc \
 	reader-test.cc \
 	vector-test.cc \
 	writer-test.cc
