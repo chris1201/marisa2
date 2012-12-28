@@ -34,12 +34,18 @@ class MARISA2_DLL_EXPORT Mapper {
     return map_objs(reinterpret_cast<const void **>(objs),
                     sizeof(T), num_objs);
   }
+  template <typename T>
+  Error read(T *objs, std::size_t num_objs = 1) noexcept {
+    return read_objs(objs, sizeof(T), num_objs);
+  }
 
  private:
   std::shared_ptr<MapperImpl> impl_;
 
   Error map_objs(const void **objs, std::size_t obj_size,
                  std::size_t num_objs) noexcept;
+  Error read_objs(void *objs, std::size_t obj_size,
+                  std::size_t num_objs) noexcept;
 };
 
 }  // namespace grimoire

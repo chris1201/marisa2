@@ -10,6 +10,7 @@
  #include <unistd.h>
 #endif  // _WIN32
 
+#include <cstring>
 #include <limits>
 
 #include "mapper.h"
@@ -28,7 +29,8 @@ class MapperImpl {
   Error open(const char *filename);
   Error open(const void *address, std::size_t num_bytes);
 
-  Error map(const void **objs, std::size_t num_bytes);
+  Error map(const void **bytes, std::size_t num_bytes);
+  Error read(void *bytes, std::size_t num_bytes);
 
  private:
   const void *ptr_;
@@ -157,6 +159,18 @@ Error MapperImpl::map(const void **bytes, std::size_t num_bytes) {
   return MARISA2_SUCCESS;
 }
 
+Error MapperImpl::read(void *bytes, std::size_t num_bytes) {
+  if (num_bytes > avail_) {
+    return MARISA2_ERROR(MARISA2_BOUND_ERROR, "failed to read bytes: "
+                         "mapped bytes are exhausted");
+  }
+
+  std::memcpy(bytes, ptr_, num_bytes);
+  ptr_ = static_cast<const char *>(ptr_) + num_bytes;
+  avail_ -= num_bytes;
+  return MARISA2_SUCCESS;
+}
+
 Mapper::Mapper() : impl_(nullptr) {}
 Mapper::~Mapper() {}
 
@@ -235,6 +249,28 @@ Error Mapper::map_objs(const void **objs, std::size_t obj_size,
   }
 
   return impl_->map(objs, obj_size * num_objs);
+}
+
+Error Mapper::read_objs(void *objs, std::size_t obj_size,
+                        std::size_t num_objs) {
+  if (!impl_) {
+    return MARISA2_ERROR(MARISA2_STATE_ERROR,
+                         "failed to read objects: not ready");
+  }
+
+  if (obj_size == 0) {
+    return MARISA2_ERROR(MARISA2_RANGE_ERROR,
+                         "failed to read objects: obj_size == 0");
+  }
+
+  if (num_objs == 0) {
+    return MARISA2_SUCCESS;
+  } else if (num_objs > (std::numeric_limits<std::size_t>::max() / obj_size)) {
+    return MARISA2_ERROR(MARISA2_RANGE_ERROR,
+                         "failed to read objects: too many objects");
+  }
+
+  return impl_->read(objs, obj_size * num_objs);
 }
 
 }  // namespace grimoire
