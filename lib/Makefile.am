@@ -26,6 +26,7 @@ libmarisa2_grimoire_la_SOURCES = \
 libmarisa2_grimoire_includedir = ${includedir}/marisa2/grimoire
 libmarisa2_grimoire_include_HEADERS = \
 	marisa2/grimoire/mapper.h \
+	marisa2/grimoire/pop-count.h \
 	marisa2/grimoire/reader.h \
 	marisa2/grimoire/vector.h \
 	marisa2/grimoire/writer.h
