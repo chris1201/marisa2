@@ -60,12 +60,15 @@ Error VectorImpl::read(Reader &reader, const VectorHeader &header) {
                          "failed to read vector: too many objects");
   }
 
-  std::unique_ptr<char[]> new_buf(
-      new (std::nothrow) char[obj_size * num_objs]);
-  if (!new_buf) {
-    return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
-                         "failed to read vector: new char[] failed");
+  std::unique_ptr<char[]> new_buf;
+  if (num_objs != 0) {
+    new_buf.reset(new (std::nothrow) char[obj_size * num_objs]);
+    if (!new_buf) {
+      return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
+                           "failed to read vector: new char[] failed");
+    }
   }
+
   Error error = reader.read(new_buf.get(), obj_size * num_objs);
   if (error) {
     return error;
@@ -103,11 +106,13 @@ Error VectorImpl::reallocate(std::size_t obj_size, std::size_t num_objs) {
                          "failed to reallocate vector: too many objects");
   }
 
-  std::unique_ptr<char[]> new_buf(
-      new (std::nothrow) char[obj_size * num_objs]);
-  if (!new_buf) {
-    return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
-                         "failed to reallocate vector: new char[] failed");
+  std::unique_ptr<char[]> new_buf;
+  if (num_objs != 0) {
+    new_buf.reset(new (std::nothrow) char[obj_size * num_objs]);
+    if (!new_buf) {
+      return MARISA2_ERROR(MARISA2_MEMORY_ERROR,
+                           "failed to reallocate vector: new char[] failed");
+    }
   }
 
   std::memcpy(new_buf.get(), address_, obj_size * size_);

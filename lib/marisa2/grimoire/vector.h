@@ -138,6 +138,10 @@ class Vector {
     return impl_.reserve(sizeof(T), required_capacity);
   }
 
+  void clear() noexcept {
+    impl_ = VectorImpl();
+  }
+
   Error shrink() noexcept {
     if (impl_.size() != impl_.capacity()) {
       return impl_.reallocate(sizeof(T), impl_.size());
