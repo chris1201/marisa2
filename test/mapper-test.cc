@@ -22,6 +22,7 @@ class MapperTest : public testing::Test {
   }
 
   void WriteData(std::ostream &stream);
+  void MapData(marisa2::grimoire::Mapper &mapper);
   void ReadData(marisa2::grimoire::Mapper &mapper);
 
  private:
@@ -66,7 +67,7 @@ void MapperTest::WriteData(std::ostream &stream) {
   ASSERT_TRUE(static_cast<bool>(stream));
 }
 
-void MapperTest::ReadData(marisa2::grimoire::Mapper &mapper) {
+void MapperTest::MapData(marisa2::grimoire::Mapper &mapper) {
   marisa2::Error error;
 
   const std::uint8_t *byte;
@@ -89,6 +90,31 @@ void MapperTest::ReadData(marisa2::grimoire::Mapper &mapper) {
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
   for (std::size_t i = 0; i < dwords_.size(); ++i) {
     ASSERT_EQ(dwords_[i], dwords[i]);
+  }
+}
+
+void MapperTest::ReadData(marisa2::grimoire::Mapper &mapper) {
+  marisa2::Error error;
+
+  std::uint8_t byte;
+  for (std::size_t i = 0; i < bytes_.size(); ++i) {
+    error = mapper.read(&byte);
+    ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+    ASSERT_EQ(bytes_[i], byte);
+  }
+
+  std::uint16_t word;
+  for (std::size_t i = 0; i < words_.size(); ++i) {
+    error = mapper.read(&word, 1);
+    ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+    ASSERT_EQ(words_[i], word);
+  }
+
+  std::vector<std::uint32_t> buf(dwords_.size());
+  error = mapper.read(&*buf.begin(), dwords_.size());
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+  for (std::size_t i = 0; i < dwords_.size(); ++i) {
+    ASSERT_EQ(dwords_[i], buf[i]);
   }
 }
 
@@ -146,6 +172,11 @@ TEST_F(MapperTest, Filename) {
   error = mapper.open(FILENAME);
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
 
+  MapData(mapper);
+
+  error = mapper.open(FILENAME);
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+
   ReadData(mapper);
 }
 
@@ -162,6 +193,11 @@ TEST_F(MapperTest, Address) {
   WriteData(stream);
 
   std::string buf = stream.str();
+
+  error = mapper.open(buf.data(), buf.size());
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+
+  MapData(mapper);
 
   error = mapper.open(buf.data(), buf.size());
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
