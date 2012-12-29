@@ -16,7 +16,7 @@ class PopCount {
     return value_ != 0;
   }
 
-  constexpr std::uint8_t operator[](std::size_t i) {
+  constexpr std::uint8_t operator[](std::size_t i) noexcept {
     return static_cast<std::uint8_t>(value_ >> (i * 8));
   }
 
