@@ -42,6 +42,7 @@ class MARISA2_DLL_EXPORT Mapper {
  private:
   std::shared_ptr<MapperImpl> impl_;
 
+  // These functions assume obj_size != 0.
   Error map_objs(const void **objs, std::size_t obj_size,
                  std::size_t num_objs) noexcept;
   Error read_objs(void *objs, std::size_t obj_size,

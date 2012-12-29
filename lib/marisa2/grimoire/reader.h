@@ -37,6 +37,7 @@ class MARISA2_DLL_EXPORT Reader {
  private:
   std::unique_ptr<ReaderImpl> impl_;
 
+  // This function assumes obj_size != 0.
   Error read_objs(void *objs, std::size_t obj_size,
                   std::size_t num_objs) noexcept;
 };

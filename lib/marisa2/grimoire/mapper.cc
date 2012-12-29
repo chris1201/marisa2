@@ -231,21 +231,16 @@ Error Mapper::map_objs(const void **objs, std::size_t obj_size,
                          "failed to map objects: not ready");
   }
 
-  if (objs == nullptr) {
-    return MARISA2_ERROR(MARISA2_NULL_ERROR,
-                         "failed to map objects: objs == nullptr");
-  }
-
-  if (obj_size == 0) {
-    return MARISA2_ERROR(MARISA2_RANGE_ERROR,
-                         "failed to map objects: obj_size == 0");
-  }
-
   if (num_objs == 0) {
     return MARISA2_SUCCESS;
   } else if (num_objs > (std::numeric_limits<std::size_t>::max() / obj_size)) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
                          "failed to map objects: too many objects");
+  }
+
+  if (objs == nullptr) {
+    return MARISA2_ERROR(MARISA2_NULL_ERROR,
+                         "failed to map objects: objs == nullptr");
   }
 
   return impl_->map(objs, obj_size * num_objs);
@@ -258,16 +253,16 @@ Error Mapper::read_objs(void *objs, std::size_t obj_size,
                          "failed to read objects: not ready");
   }
 
-  if (obj_size == 0) {
-    return MARISA2_ERROR(MARISA2_RANGE_ERROR,
-                         "failed to read objects: obj_size == 0");
-  }
-
   if (num_objs == 0) {
     return MARISA2_SUCCESS;
   } else if (num_objs > (std::numeric_limits<std::size_t>::max() / obj_size)) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
                          "failed to read objects: too many objects");
+  }
+
+  if (objs == nullptr) {
+    return MARISA2_ERROR(MARISA2_NULL_ERROR,
+                         "failed to read objects: objs == nullptr");
   }
 
   return impl_->read(objs, obj_size * num_objs);

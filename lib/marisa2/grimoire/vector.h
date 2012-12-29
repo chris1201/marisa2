@@ -24,9 +24,13 @@ class MARISA2_DLL_EXPORT VectorImpl {
   VectorImpl(const VectorImpl &) = delete;
   VectorImpl &operator=(const VectorImpl &) = delete;
 
-  Error map(Mapper &mapper, const VectorHeader &header) noexcept;
-  Error read(Reader &reader, const VectorHeader &header) noexcept;
+  // These functions assume obj_size != 0.
+  Error map(Mapper &mapper, std::size_t obj_size,
+            const VectorHeader &header) noexcept;
+  Error read(Reader &reader, std::size_t obj_size,
+             const VectorHeader &header) noexcept;
 
+  // These functions assume obj_size != 0.
   Error reserve(std::size_t obj_size, std::size_t num_objs) noexcept;
   Error reallocate(std::size_t obj_size, std::size_t num_objs) noexcept;
 
@@ -71,18 +75,10 @@ class Vector {
   }
 
   Error map(Mapper &mapper, const VectorHeader &header) noexcept {
-    if (header.obj_size != sizeof(T)) {
-      return MARISA2_ERROR(MARISA2_FORMAT_ERROR, "failed to map vector: "
-                           "header.obj_size != sizeof(T)");
-    }
-    return impl_.map(mapper, header);
+    return impl_.map(mapper, sizeof(T), header);
   }
   Error read(Reader &reader, const VectorHeader &header) noexcept {
-    if (header.obj_size != sizeof(T)) {
-      return MARISA2_ERROR(MARISA2_FORMAT_ERROR, "failed to read vector: "
-                           "header.obj_size != sizeof(T)");
-    }
-    return impl_.read(reader, header);
+    return impl_.read(reader, sizeof(T), header);
   }
   Error write(Writer &writer) const noexcept {
     return writer.write(static_cast<const T *>(impl_.address()), impl_.size());
@@ -101,14 +97,14 @@ class Vector {
   }
 
   // TODO: Remove this function if unused.
-  Error pop_back() noexcept {
-    if (impl_.size() == 0) {
-      return MARISA2_ERROR(MARISA2_STATE_ERROR,
-                           "failed to pop object: empty");
-    }
-    impl_.set_size(impl_.size() - 1);
-    return MARISA2_SUCCESS;
-  }
+//  Error pop_back() noexcept {
+//    if (impl_.size() == 0) {
+//      return MARISA2_ERROR(MARISA2_STATE_ERROR,
+//                           "failed to pop object: empty");
+//    }
+//    impl_.set_size(impl_.size() - 1);
+//    return MARISA2_SUCCESS;
+//  }
 
   Error resize(std::size_t new_size) noexcept {
     if (new_size > impl_.capacity()) {

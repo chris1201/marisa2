@@ -231,16 +231,16 @@ Error Writer::write_objs(const void *objs, std::size_t obj_size,
                          "failed to write objects: not ready");
   }
 
-  if (obj_size == 0) {
-    return MARISA2_ERROR(MARISA2_RANGE_ERROR,
-                         "failed to write objects: obj_size == 0");
-  }
-
   if (num_objs == 0) {
     return MARISA2_SUCCESS;
   } else if (num_objs > (std::numeric_limits<std::size_t>::max() / obj_size)) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
                          "failed to write objects: too many objects");
+  }
+
+  if (objs == nullptr) {
+    return MARISA2_ERROR(MARISA2_NULL_ERROR,
+                         "failed to write objects: objs == nullptr");
   }
 
   return impl_->write(objs, obj_size * num_objs);

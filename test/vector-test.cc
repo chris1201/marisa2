@@ -176,23 +176,23 @@ TEST_F(VectorTest, PushBack) {
   ASSERT_EQ(100, vector[2]);
 }
 
-TEST_F(VectorTest, PopBack) {
-  marisa2::Error error;
-  marisa2::grimoire::Vector<int> vector;
+//TEST_F(VectorTest, PopBack) {
+//  marisa2::Error error;
+//  marisa2::grimoire::Vector<int> vector;
 
-  error = vector.pop_back();
-  ASSERT_EQ(MARISA2_STATE_ERROR, error.code()) << error.message();
+//  error = vector.pop_back();
+//  ASSERT_EQ(MARISA2_STATE_ERROR, error.code()) << error.message();
 
-  error = vector.push_back(123);
-  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+//  error = vector.push_back(123);
+//  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
 
-  error = vector.pop_back();
-  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
-  ASSERT_EQ(0U, vector.size());
+//  error = vector.pop_back();
+//  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+//  ASSERT_EQ(0U, vector.size());
 
-  error = vector.pop_back();
-  ASSERT_EQ(MARISA2_STATE_ERROR, error.code()) << error.message();
-}
+//  error = vector.pop_back();
+//  ASSERT_EQ(MARISA2_STATE_ERROR, error.code()) << error.message();
+//}
 
 TEST_F(VectorTest, Resize) {
   marisa2::Error error;

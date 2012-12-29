@@ -43,6 +43,7 @@ class MARISA2_DLL_EXPORT Writer {
  private:
   std::unique_ptr<WriterImpl> impl_;
 
+  // This function assumes obj_size != 0.
   Error write_objs(const void *objs, std::size_t obj_size,
                    std::size_t num_objs) noexcept;
 };
