@@ -9,48 +9,45 @@ namespace grimoire {
 class PopCount {
  public:
   PopCount() = default;
-  explicit constexpr PopCount(std::uint32_t x) noexcept
+  explicit constexpr PopCount(std::uint64_t x) noexcept
     : value_(pop_count_1st(x)) {}
 
   explicit constexpr operator bool() noexcept {
     return value_ != 0;
   }
 
-  constexpr std::uint8_t low_8() noexcept {
-    return static_cast<std::uint8_t>(value_);
-  }
-  constexpr std::uint8_t low_16() noexcept {
-    return static_cast<std::uint8_t>(value_ >> 8);
-  }
-  constexpr std::uint8_t low_24() noexcept {
-    return static_cast<std::uint8_t>(value_ >> 16);
-  }
-  constexpr std::uint8_t low_32() noexcept {
-    return static_cast<std::uint8_t>(value_ >> 24);
+  constexpr std::uint8_t operator[](std::size_t i) {
+    return static_cast<std::uint8_t>(value_ >> (i * 8));
   }
 
-  static constexpr std::uint8_t pop_count(std::uint32_t x) noexcept {
+  static constexpr std::uint8_t pop_count(std::uint64_t x) noexcept {
 #ifdef MARISA2_USE_POPCNT
-    return static_cast<std::uint8_t>(::__builtin_popcount(x));
+    return static_cast<std::uint8_t>(::__builtin_popcountll(x));
 #else  // MARISA2_USE_POPCNT
-    return static_cast<std::uint8_t>(pop_count_1st(x) >> 24);
+    return static_cast<std::uint8_t>(pop_count_1st(x) >> 56);
 #endif  // MARISA2_USE_POPCNT
   }
 
  private:
-  std::uint32_t value_;
+  std::uint64_t value_;
 
-  static constexpr std::uint32_t pop_count_1st(std::uint32_t x) noexcept {
-    return pop_count_2nd((x & 0x55555555U) + ((x & 0xAAAAAAAAU) >> 1));
+  static constexpr std::uint64_t MULTIPLIER =
+      static_cast<std::uint64_t>(0x0101010101010101ULL);
+
+  static constexpr std::uint64_t pop_count_1st(std::uint64_t x) noexcept {
+    return pop_count_2nd(
+        (x & (0x55 * MULTIPLIER)) + ((x & (0xAA * MULTIPLIER)) >> 1));
   }
-  static constexpr std::uint32_t pop_count_2nd(std::uint32_t x) noexcept {
-    return pop_count_3rd((x & 0x33333333U) + ((x & 0xCCCCCCCCU) >> 2));
+  static constexpr std::uint64_t pop_count_2nd(std::uint64_t x) noexcept {
+    return pop_count_3rd(
+        (x & (0x33 * MULTIPLIER)) + ((x & (0xCC * MULTIPLIER)) >> 2));
   }
-  static constexpr std::uint32_t pop_count_3rd(std::uint32_t x) noexcept {
-    return pop_count_last((x & 0x0F0F0F0FU) + ((x & 0xF0F0F0F0U) >> 4));
+  static constexpr std::uint64_t pop_count_3rd(std::uint64_t x) noexcept {
+    return pop_count_4th(
+        (x & (0x0F * MULTIPLIER)) + ((x & (0xF0 * MULTIPLIER)) >> 4));
   }
-  static constexpr std::uint32_t pop_count_last(std::uint32_t x) noexcept {
-    return x * 0x01010101U;
+  static constexpr std::uint64_t pop_count_4th(std::uint64_t x) noexcept {
+    return x * MULTIPLIER;
   }
 };
 
