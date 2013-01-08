@@ -18,6 +18,7 @@ libmarisa2_include_HEADERS = \
 	marisa2/version.h
 
 libmarisa2_grimoire_la_SOURCES = \
+	marisa2/grimoire/bit-vector.cc \
 	marisa2/grimoire/mapper.cc \
 	marisa2/grimoire/reader.cc \
 	marisa2/grimoire/vector.cc \
@@ -25,6 +26,7 @@ libmarisa2_grimoire_la_SOURCES = \
 
 libmarisa2_grimoire_includedir = ${includedir}/marisa2/grimoire
 libmarisa2_grimoire_include_HEADERS = \
+	marisa2/grimoire/bit-vector.h \
 	marisa2/grimoire/mapper.h \
 	marisa2/grimoire/pop-count.h \
 	marisa2/grimoire/reader.h \

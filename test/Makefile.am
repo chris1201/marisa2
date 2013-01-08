@@ -5,6 +5,7 @@ TESTS = test-all
 check_PROGRAMS = ${TESTS}
 
 test_all_SOURCES = \
+	bit-vector-test.cc \
 	gtest/gtest-all.cc \
 	gtest/gtest_main.cc \
 	mapper-test.cc \
