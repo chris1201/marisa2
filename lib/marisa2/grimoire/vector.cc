@@ -13,13 +13,13 @@ VectorImpl::VectorImpl(std::size_t obj_size)
 Error VectorImpl::map(Mapper &mapper, const VectorHeader &header) {
   if (header.size > std::numeric_limits<std::size_t>::max()) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
-                         "failed to map vector: too many objects");
+                         "failed to map vector: too large");
   }
 
   const std::size_t new_size = static_cast<std::size_t>(header.size);
   if (new_size > (std::numeric_limits<std::size_t>::max() / obj_size_)) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
-                         "failed to map vector: too many objects");
+                         "failed to map vector: too large");
   }
 
   const char *objs;
@@ -38,13 +38,13 @@ Error VectorImpl::map(Mapper &mapper, const VectorHeader &header) {
 Error VectorImpl::read(Reader &reader, const VectorHeader &header) {
   if (header.size > std::numeric_limits<std::size_t>::max()) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
-                         "failed to read vector: too many objects");
+                         "failed to read vector: too large");
   }
 
   const std::size_t new_size = static_cast<std::size_t>(header.size);
   if (new_size > (std::numeric_limits<std::size_t>::max() / obj_size_)) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
-                         "failed to read vector: too many objects");
+                         "failed to read vector: too large");
   }
 
   std::unique_ptr<char[]> new_buf;
@@ -87,7 +87,7 @@ Error VectorImpl::reserve(std::size_t new_size) {
 Error VectorImpl::reallocate(std::size_t new_size) {
   if (new_size > (std::numeric_limits<std::size_t>::max() / obj_size_)) {
     return MARISA2_ERROR(MARISA2_RANGE_ERROR,
-                         "failed to reallocate vector: too many objects");
+                         "failed to reallocate vector: too large");
   }
 
   std::unique_ptr<char[]> new_buf;
