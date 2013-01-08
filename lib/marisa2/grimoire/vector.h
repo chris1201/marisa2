@@ -136,7 +136,7 @@ class Vector {
   }
 
   void clear() noexcept {
-    impl_ = VectorImpl();
+    impl_.reallocate(sizeof(T), 0);
   }
 
   Error shrink() noexcept {
