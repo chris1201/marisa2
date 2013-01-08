@@ -12,27 +12,22 @@ namespace marisa2 {
 namespace grimoire {
 
 struct VectorHeader {
-  std::uint64_t obj_size;
-  std::uint64_t num_objs;
+  std::uint64_t size;
 };
 
 class MARISA2_DLL_EXPORT VectorImpl {
  public:
-  VectorImpl() noexcept : address_(nullptr), size_(0), capacity_(0), buf_() {}
+  explicit VectorImpl(std::size_t obj_size) noexcept;
   ~VectorImpl() = default;
 
   VectorImpl(const VectorImpl &) = delete;
   VectorImpl &operator=(const VectorImpl &) = delete;
 
-  // These functions assume obj_size != 0.
-  Error map(Mapper &mapper, std::size_t obj_size,
-            const VectorHeader &header) noexcept;
-  Error read(Reader &reader, std::size_t obj_size,
-             const VectorHeader &header) noexcept;
+  Error map(Mapper &mapper, const VectorHeader &header) noexcept;
+  Error read(Reader &reader, const VectorHeader &header) noexcept;
 
-  // These functions assume obj_size != 0.
-  Error reserve(std::size_t obj_size, std::size_t num_objs) noexcept;
-  Error reallocate(std::size_t obj_size, std::size_t num_objs) noexcept;
+  Error reserve(std::size_t new_size) noexcept;
+  Error reallocate(std::size_t new_size) noexcept;
 
   const void *address() const noexcept {
     return address_;
@@ -48,8 +43,8 @@ class MARISA2_DLL_EXPORT VectorImpl {
     return capacity_;
   }
 
-  void set_size(std::size_t size) noexcept {
-    size_ = size;
+  void set_size(std::size_t new_size) noexcept {
+    size_ = new_size;
   }
 
  private:
@@ -57,6 +52,7 @@ class MARISA2_DLL_EXPORT VectorImpl {
   std::size_t size_;
   std::size_t capacity_;
   std::unique_ptr<char[]> buf_;
+  const std::size_t obj_size_;
 };
 
 template <typename T>
@@ -64,7 +60,7 @@ class Vector {
   static_assert(std::is_pod<T>::value, "T is not a POD type.");
 
  public:
-  Vector() = default;
+  Vector() noexcept : impl_(sizeof(T)) {}
   ~Vector() = default;
 
   Vector(const Vector &) = delete;
@@ -75,10 +71,10 @@ class Vector {
   }
 
   Error map(Mapper &mapper, const VectorHeader &header) noexcept {
-    return impl_.map(mapper, sizeof(T), header);
+    return impl_.map(mapper, header);
   }
   Error read(Reader &reader, const VectorHeader &header) noexcept {
-    return impl_.read(reader, sizeof(T), header);
+    return impl_.read(reader, header);
   }
   Error write(Writer &writer) const noexcept {
     return writer.write(static_cast<const T *>(impl_.address()), impl_.size());
@@ -86,7 +82,7 @@ class Vector {
 
   Error push_back(const T &obj) noexcept {
     if (impl_.size() == impl_.capacity()) {
-      Error error = impl_.reserve(sizeof(T), impl_.size() + 1);
+      Error error = impl_.reserve(impl_.size() + 1);
       if (error) {
         return error;
       }
@@ -108,7 +104,7 @@ class Vector {
 
   Error resize(std::size_t new_size) noexcept {
     if (new_size > impl_.capacity()) {
-      Error error = impl_.reserve(sizeof(T), new_size);
+      Error error = impl_.reserve(new_size);
       if (error) {
         return error;
       }
@@ -119,7 +115,7 @@ class Vector {
 
   Error resize(std::size_t new_size, const T &obj) noexcept {
     if (new_size > impl_.capacity()) {
-      Error error = impl_.reserve(sizeof(T), new_size);
+      Error error = impl_.reserve(new_size);
       if (error) {
         return error;
       }
@@ -132,16 +128,16 @@ class Vector {
   }
 
   Error reserve(std::size_t required_capacity) noexcept {
-    return impl_.reserve(sizeof(T), required_capacity);
+    return impl_.reserve(required_capacity);
   }
 
   void clear() noexcept {
-    impl_.reallocate(sizeof(T), 0);
+    impl_.reallocate(0);
   }
 
   Error shrink() noexcept {
     if (impl_.size() != impl_.capacity()) {
-      return impl_.reallocate(sizeof(T), impl_.size());
+      return impl_.reallocate(impl_.size());
     }
     return MARISA2_SUCCESS;
   }
@@ -186,7 +182,7 @@ class Vector {
     return impl_.capacity();
   }
   VectorHeader header() const noexcept {
-    return VectorHeader{ sizeof(T), impl_.size() };
+    return VectorHeader{ impl_.size() };
   }
 
  private:

@@ -25,8 +25,7 @@ TEST_F(VectorTest, DefaultConstructor) {
   ASSERT_EQ(0U, vector.capacity());
 
   marisa2::grimoire::VectorHeader header = vector.header();
-  ASSERT_EQ(sizeof(int), header.obj_size);
-  ASSERT_EQ(0U, header.num_objs);
+  ASSERT_EQ(0U, header.size);
 }
 
 TEST_F(VectorTest, Map) {
@@ -34,25 +33,25 @@ TEST_F(VectorTest, Map) {
   marisa2::grimoire::Vector<int> vector;
 
   marisa2::grimoire::Mapper mapper;
-  error = vector.map(mapper, marisa2::grimoire::VectorHeader{ sizeof(int), 0 });
+  error = vector.map(mapper, marisa2::grimoire::VectorHeader{ 0 });
   ASSERT_EQ(MARISA2_STATE_ERROR, error.code()) << error.message();
 
   int values[3] = { 123, 456, 789 };
   error = mapper.open(values, sizeof(values));
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
 
-  error = vector.map(mapper, marisa2::grimoire::VectorHeader{ sizeof(int), 1 });
+  error = vector.map(mapper, marisa2::grimoire::VectorHeader{ 1 });
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
   ASSERT_EQ(1U, vector.size());
   ASSERT_EQ(123, vector[0]);
 
-  error = vector.map(mapper, marisa2::grimoire::VectorHeader{ sizeof(int), 2 });
+  error = vector.map(mapper, marisa2::grimoire::VectorHeader{ 2 });
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
   ASSERT_EQ(2U, vector.size());
   ASSERT_EQ(456, vector[0]);
   ASSERT_EQ(789, vector[1]);
 
-  error = vector.map(mapper, marisa2::grimoire::VectorHeader{ sizeof(int), 1 });
+  error = vector.map(mapper, marisa2::grimoire::VectorHeader{ 1 });
   ASSERT_EQ(MARISA2_BOUND_ERROR, error.code()) << error.message();
 }
 
@@ -61,7 +60,7 @@ TEST_F(VectorTest, Read) {
   marisa2::grimoire::Vector<int> vector;
 
   marisa2::grimoire::Reader reader;
-  error = vector.read(reader, marisa2::grimoire::VectorHeader{ sizeof(int), 0 });
+  error = vector.read(reader, marisa2::grimoire::VectorHeader{ 0 });
   ASSERT_EQ(MARISA2_STATE_ERROR, error.code()) << error.message();
 
   int values[3] = { 123, 456, 789 };
@@ -72,18 +71,18 @@ TEST_F(VectorTest, Read) {
   error = reader.open(stream);
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
 
-  error = vector.read(reader, marisa2::grimoire::VectorHeader{ sizeof(int), 1 });
+  error = vector.read(reader, marisa2::grimoire::VectorHeader{ 1 });
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
   ASSERT_EQ(1U, vector.size());
   ASSERT_EQ(123, vector[0]);
 
-  error = vector.read(reader, marisa2::grimoire::VectorHeader{ sizeof(int), 2 });
+  error = vector.read(reader, marisa2::grimoire::VectorHeader{ 2 });
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
   ASSERT_EQ(2U, vector.size());
   ASSERT_EQ(456, vector[0]);
   ASSERT_EQ(789, vector[1]);
 
-  error = vector.read(reader, marisa2::grimoire::VectorHeader{ sizeof(int), 1 });
+  error = vector.read(reader, marisa2::grimoire::VectorHeader{ 1 });
   ASSERT_EQ(MARISA2_IO_ERROR, error.code()) << error.message();
 }
 
