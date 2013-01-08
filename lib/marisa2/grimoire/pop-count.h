@@ -16,11 +16,16 @@ class PopCount {
     return value_ != 0;
   }
 
+  // pop_count[i] returns the number of 1s in the least significant
+  // ((i + 1) * 8) bits. If i > 7, the result is undefined.
   constexpr std::uint8_t operator[](std::size_t i) noexcept {
-    return static_cast<std::uint8_t>(value_ >> (i * 8));
+    return static_cast<std::uint8_t>(value_ >> (i << 3));
   }
 
-  static constexpr std::uint8_t pop_count(std::uint64_t x) noexcept {
+  // ::__builtin_popcountll() uses popcnt if -msse4.2 is specified.
+  // Note: ::__builtin_popcountll() is not constexpr on Mac OSX.
+//  static constexpr std::uint8_t pop_count(std::uint64_t x) noexcept {
+  static std::uint8_t pop_count(std::uint64_t x) noexcept {
 #ifdef MARISA2_USE_POPCNT
     return static_cast<std::uint8_t>(::__builtin_popcountll(x));
 #else  // MARISA2_USE_POPCNT
@@ -31,23 +36,23 @@ class PopCount {
  private:
   std::uint64_t value_;
 
-  static constexpr std::uint64_t MULTIPLIER =
-      static_cast<std::uint64_t>(0x0101010101010101ULL);
+  // See http://en.wikipedia.org/wiki/Hamming_weight for details.
+  static constexpr std::uint64_t MASK_55 = 0x5555555555555555ULL;
+  static constexpr std::uint64_t MASK_33 = 0x3333333333333333ULL;
+  static constexpr std::uint64_t MASK_0F = 0x0F0F0F0F0F0F0F0FULL;
+  static constexpr std::uint64_t MASK_01 = 0x0101010101010101ULL;
 
   static constexpr std::uint64_t pop_count_1st(std::uint64_t x) noexcept {
-    return pop_count_2nd(
-        (x & (0x55 * MULTIPLIER)) + ((x & (0xAA * MULTIPLIER)) >> 1));
+    return pop_count_2nd(x - ((x >> 1) & MASK_55));
   }
   static constexpr std::uint64_t pop_count_2nd(std::uint64_t x) noexcept {
-    return pop_count_3rd(
-        (x & (0x33 * MULTIPLIER)) + ((x & (0xCC * MULTIPLIER)) >> 2));
+    return pop_count_3rd((x & MASK_33) + ((x >> 2) & MASK_33));
   }
   static constexpr std::uint64_t pop_count_3rd(std::uint64_t x) noexcept {
-    return pop_count_4th(
-        (x & (0x0F * MULTIPLIER)) + ((x & (0xF0 * MULTIPLIER)) >> 4));
+    return pop_count_4th((x + (x >> 4)) & MASK_0F);
   }
   static constexpr std::uint64_t pop_count_4th(std::uint64_t x) noexcept {
-    return x * MULTIPLIER;
+    return x * MASK_01;
   }
 };
 
