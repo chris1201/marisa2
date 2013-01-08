@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
 
 #include <limits>
-#include <random>
 #include <sstream>
-#include <vector>
 
 #include <marisa2/grimoire/vector.h>
 
