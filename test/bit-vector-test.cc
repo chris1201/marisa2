@@ -42,20 +42,14 @@ TEST_F(BitVectorTest, PushBack) {
   error = bit_vector.push_back(true);
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
   ASSERT_EQ(1U, bit_vector.size());
-  ASSERT_EQ(1U, bit_vector.num_1s());
-  ASSERT_EQ(0U, bit_vector.num_0s());
 
   error = bit_vector.push_back(false);
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
   ASSERT_EQ(2U, bit_vector.size());
-  ASSERT_EQ(1U, bit_vector.num_1s());
-  ASSERT_EQ(1U, bit_vector.num_0s());
 
   error = bit_vector.push_back(true);
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
   ASSERT_EQ(3U, bit_vector.size());
-  ASSERT_EQ(2U, bit_vector.num_1s());
-  ASSERT_EQ(1U, bit_vector.num_0s());
 
   ASSERT_TRUE(bit_vector[0]);
   ASSERT_FALSE(bit_vector[1]);
@@ -75,15 +69,56 @@ TEST_F(BitVectorTest, Build) {
 
   error = bit_vector.build();
   ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+  ASSERT_EQ(MARISA2_ENABLE_RANK, bit_vector.flags());
+
+  ASSERT_EQ(2U, bit_vector.num_1s());
+  ASSERT_EQ(1U, bit_vector.num_0s());
 
   ASSERT_EQ(bit_vector.num_1s(), bit_vector.rank_1(bit_vector.size()));
   ASSERT_EQ(bit_vector.num_0s(), bit_vector.rank_0(bit_vector.size()));
 }
 
 TEST_F(BitVectorTest, Rank) {
-  // TODO
+  marisa2::Error error;
+  marisa2::grimoire::BitVector bit_vector;
+
+  error = bit_vector.push_back(true);
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+  error = bit_vector.push_back(false);
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+  error = bit_vector.push_back(true);
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+
+  error = bit_vector.build();
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+  ASSERT_EQ(MARISA2_ENABLE_RANK, bit_vector.flags());
+
+  ASSERT_EQ(0U, bit_vector.rank_1(0));
+  ASSERT_EQ(1U, bit_vector.rank_1(1));
+  ASSERT_EQ(1U, bit_vector.rank_1(2));
+  ASSERT_EQ(2U, bit_vector.rank_1(3));
+
+  ASSERT_EQ(0U, bit_vector.rank_0(0));
+  ASSERT_EQ(0U, bit_vector.rank_0(1));
+  ASSERT_EQ(1U, bit_vector.rank_0(2));
+  ASSERT_EQ(1U, bit_vector.rank_0(3));
 }
 
 TEST_F(BitVectorTest, Select) {
+  marisa2::Error error;
+  marisa2::grimoire::BitVector bit_vector;
+
+  error = bit_vector.push_back(true);
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+  error = bit_vector.push_back(false);
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+  error = bit_vector.push_back(true);
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+
+  error = bit_vector.build(MARISA2_ENABLE_SELECT_1 | MARISA2_ENABLE_SELECT_0);
+  ASSERT_EQ(MARISA2_NO_ERROR, error.code()) << error.message();
+  ASSERT_EQ(MARISA2_ENABLE_RANK | MARISA2_ENABLE_SELECT_1 |
+            MARISA2_ENABLE_SELECT_0, bit_vector.flags());
+
   // TODO
 }
